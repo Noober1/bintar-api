@@ -1,0 +1,24 @@
+{
+  "name": "bintar-cbt",
+  "version": "1.0.0",
+  "description": "Bina taruna API",
+  "author": "Cucu Ruhiyatna",
+  "keywords": [],
+  "license": "MIT",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon ./bin/app",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "http-errors": "^1.8.0",
+    "pino": "^6.13.1",
+    "pino-http": "^5.7.0",
+    "pino-pretty": "^6.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.12"
+  }
+}

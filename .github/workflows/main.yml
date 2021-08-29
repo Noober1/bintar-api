@@ -31,4 +31,4 @@ jobs:
 
       # Runs a set of commands using the runners shell
       - name: Run App
-        run: /opt/nodejs/bin/pm2 restart bintar-api
+        run: pm2 restart bintar-api

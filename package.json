@@ -8,8 +8,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "cross-env NODE_ENV=development nodemon ./bin/app",
-    "start": "cross-env NODE_ENV=production ./bin/app",
-    "deploy": "pm2 restart bintar-api"
+    "start": "cross-env NODE_ENV=production ./bin/app"
   },
   "dependencies": {
     "body-parser": "^1.19.0",

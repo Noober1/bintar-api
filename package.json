@@ -8,8 +8,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "cross-env NODE_ENV=development nodemon ./bin/app",
-    "start": "cross-env NODE_ENV=production ./bin/app",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "cross-env NODE_ENV=production ./bin/app"
   },
   "dependencies": {
     "body-parser": "^1.19.0",

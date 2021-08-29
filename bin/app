@@ -4,6 +4,6 @@ require('dotenv').config()
 
 // Pass configuration to application
 require('../')({
-	port: process.env.PORT,
-	host: 'localhost'
+	port: process.env.PORT || 8080,
+	host: process.env.HOST || 'localhost'
 })

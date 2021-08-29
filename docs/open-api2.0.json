@@ -1,0 +1,286 @@
+{
+    "swagger":"2.0",
+    "info": {
+        "title":"bintar-api",
+        "version":"1.0"
+    },
+    "host": "localhost:3000",
+    "basePath": "/v1",
+    "schemes": ["http"],
+    "paths": {
+        "/config": {
+            "get": {
+                "description": "Menampilkan konfigurasi bintar-api",
+                "tags": ["Configuration"],
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/inventaris/auth": {
+            "post": {
+                "description": "Autentikasi Untuk aplikasi inventaris",
+                "consumes":["application/json","application/x-www-form-urlencoded"],
+                "tags": ["Inventaris - Auth"],
+                "parameters": [
+                    {
+                        "in":"body",
+                        "name":"user",
+                        "schema": {
+                            "required": ["email","password"],
+                            "type" : "object",
+                            "properties": {
+                                "email":{
+                                    "type":"string"
+                                },
+                                "password":{
+                                    "type":"string"
+                                }
+                            }
+
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/inventaris/item": {
+            "get": {
+                "tags": ["Inventaris - Item"],
+                "description": "Menampilkan data barang",
+                "parameters": [
+                    {
+                        "in":"path",
+                        "name":"page",
+                        "default": 1,
+                        "minimum": 1,
+                        "type": "number",
+                        "description": "Halaman yang ditampilkan"
+                    },
+                    {
+                        "in":"path",
+                        "name":"limit",
+                        "default":10,
+                        "minimum": 1,
+                        "type": "number",
+                        "description": "Limit data yang ditampilkan"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/inventaris/item/{id}": {
+            "get": {
+                "tags": ["Inventaris - Item"],
+                "description": "Menampilkan data barang berdasarkan ID barang",
+                "parameters": [
+                    {
+                        "in":"path",
+                        "name":"id",
+                        "required": true,
+                        "default": 1,
+                        "minimum": 1,
+                        "type": "number",
+                        "description": "ID Barang"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/inventaris/item/{id}/input": {
+            "get": {
+                "tags": ["Inventaris - Item"],
+                "description": "Menampilkan data input berdasarkan ID barang",
+                "parameters": [
+                    {
+                        "in":"path",
+                        "name":"id",
+                        "default": 1,
+                        "required": true,
+                        "minimum": 1,
+                        "type": "number",
+                        "description": "ID Barang"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/inventaris/item/{id}/output": {
+            "get": {
+                "tags": ["Inventaris - Item"],
+                "description": "Menampilkan data output berdasarkan ID barang",
+                "parameters": [
+                    {
+                        "in":"path",
+                        "name":"id",
+                        "default": 1,
+                        "required": true,
+                        "minimum": 1,
+                        "type": "number",
+                        "description": "ID Barang"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/inventaris/input": {
+            "get": {
+                "tags": ["Inventaris - Input"],
+                "description": "Menampilkan data input",
+                "parameters": [
+                    {
+                        "in":"path",
+                        "name":"page",
+                        "default": 1,
+                        "minimum": 1,
+                        "type": "number",
+                        "description": "Halaman yang ditampilkan"
+                    },
+                    {
+                        "in":"path",
+                        "name":"limit",
+                        "default":10,
+                        "minimum": 1,
+                        "type": "number",
+                        "description": "Limit data yang ditampilkan"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/inventaris/input/{id}": {
+            "get": {
+                "tags": ["Inventaris - Input"],
+                "description": "Menampilkan data input berdasarkan ID input",
+                "parameters": [
+                    {
+                        "in":"path",
+                        "name":"id",
+                        "default": 1,
+                        "minimum": 1,
+                        "required": true,
+                        "type": "number",
+                        "description": "ID input"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/inventaris/output": {
+            "get": {
+                "tags": ["Inventaris - Output"],
+                "description": "Menampilkan data output",
+                "parameters": [
+                    {
+                        "in":"path",
+                        "name":"page",
+                        "default": 1,
+                        "minimum": 1,
+                        "type": "number",
+                        "description": "Halaman yang ditampilkan"
+                    },
+                    {
+                        "in":"path",
+                        "name":"limit",
+                        "default":10,
+                        "minimum": 1,
+                        "type": "number",
+                        "description": "Limit data yang ditampilkan"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/inventaris/output/{id}": {
+            "get": {
+                "tags": ["Inventaris - Output"],
+                "description": "Menampilkan data output berdasarkan ID output",
+                "parameters": [
+                    {
+                        "in":"path",
+                        "name":"id",
+                        "default": 1,
+                        "minimum": 1,
+                        "required": true,
+                        "type": "number",
+                        "description": "ID output"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/inventaris/category": {
+            "get": {
+                "tags": ["Inventaris - Category"],
+                "description": "Menampilkan kategori - kategori barang yang terdaftar",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/inventaris/category/{id}": {
+            "get": {
+                "tags": ["Inventaris - Category"],
+                "description": "Menampilkan data kategori berdasarkan ID kategori",
+                "parameters": [
+                    {
+                        "in":"path",
+                        "name":"id",
+                        "required": true,
+                        "default": 1,
+                        "minimum": 1,
+                        "type": "number",
+                        "description": "ID kategori"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        }
+    }
+}

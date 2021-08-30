@@ -36,7 +36,7 @@ const loginAuth = async(req,res,next) => {
             email:getData.email,
             level:getData.level,
         })
-        
+
     } catch (error) {
         next(error)
     }

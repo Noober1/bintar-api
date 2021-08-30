@@ -4,6 +4,7 @@ const httpErrors = require('http-errors')
 const pino = require('pino')
 const pinoHttp = require('pino-http')
 const bodyParser = require('body-parser')
+const cors = require('cors')
 
 module.exports = function main (options, cb) {
 	// Set default options

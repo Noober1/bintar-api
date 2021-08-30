@@ -43,14 +43,18 @@ module.exports = function main (options, cb) {
 	// Create the express app
 	const app = express()
 
-
 	// Common middleware
 	// app.use(/* ... */)
 
+	// cors configuration
+	app.use(cors())
+
+	// bodyparser urlencode config
 	app.use(bodyParser.urlencoded({
 		extended: true
 	}));
 
+	// bodyparser json config
 	app.use(bodyParser.json({
 		limit: "8mb",
 	}));

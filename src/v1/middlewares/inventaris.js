@@ -30,7 +30,13 @@ const loginAuth = async(req,res,next) => {
             })
         }
 
-        return res.json(getData)
+        return res.json({
+            firstName:getData.nama_depan,
+            lastName:getData.nama_belakang,
+            email:getData.email,
+            level:getData.level,
+        })
+        
     } catch (error) {
         next(error)
     }

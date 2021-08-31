@@ -6,6 +6,35 @@ const { json } = require('body-parser');
 const dataMapping = require('./dataMapping');
 const _ = require('lodash');
 
+// basic data inventaris
+
+const inventarisIndex = async(req,res,next) => {
+
+    try {
+        const getItem = await db('inventaris_barang').count('id as cid').first()
+        const getCategory = await db('inventaris_kategori').count('id as cid').first()
+        const getInput = await db('inventaris_input').count('id as cid').first()
+        const getOutput = await db('inventaris_output').count('id as cid').first()
+        const getReturn = await db('inventaris_return').count('id as cid').first()
+
+        return res.json({
+            status:'active',
+            maintenanceMode:false,
+            counter:{
+                item:getItem.cid,
+                category:getCategory.cid,
+                input:getInput.cid,
+                return:getReturn.cid,
+                output:getOutput.cid,
+                audit:114,
+                logs:116
+            }
+        })
+    } catch (error) {
+        next(error)
+    }
+}
+
 //autentikasi untuk aplikasi inventaris
 const loginAuth = async(req,res,next) => {
     try {
@@ -244,6 +273,7 @@ const getOutputById = async(req,res,next) => {
 }
 
 module.exports = {
+    inventarisIndex,
     getAllBarang,
     getBarangById,
     loginAuth,

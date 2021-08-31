@@ -5,11 +5,7 @@ const router = express.Router()
 
 router
 	.route('/')
-	.get((req,res) => {
-		return res.json({
-			test:'hello'
-		})
-	})
+	.get(inventaris.inventarisIndex)
 
 router
 	.post('/auth',inventaris.loginAuth)

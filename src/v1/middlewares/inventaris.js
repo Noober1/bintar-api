@@ -3,8 +3,8 @@ const db = require('../../../lib/db');
 const pagination = require('../../../lib/pagination');
 const Crypto = require('crypto');
 const { json } = require('body-parser');
-const { itemData } = require('./itemMapping');
-const _ = require('lodash')
+const dataMapping = require('./dataMapping');
+const _ = require('lodash');
 
 //autentikasi untuk aplikasi inventaris
 const loginAuth = async(req,res,next) => {
@@ -50,7 +50,7 @@ const getAllBarang = async(req,res,next) => {
         const getData = await db('inventaris_barang')
             .paginate(pagination(req.page,req.limit));
 
-        getData.data = getData.data.map(itemData)
+        getData.data = getData.data.map(dataMapping.item)
 
         return res.json(getData)
 
@@ -80,7 +80,7 @@ const getBarangById = async(req,res,next) => {
         }
 
         return res.json({
-            data: itemData(getData)
+            data: dataMapping.item(getData)
         })
 
     } catch (error) {
@@ -146,8 +146,7 @@ const getOutputByIdBarang = async(req,res,next) => {
 const getCategory = async(req,res,next) => {
     try {
         const getData = await db('inventaris_kategori')
-
-        return res.json(getData)
+        return res.json(getData.map(dataMapping.category))
     } catch (error) {
         next(error)
     }

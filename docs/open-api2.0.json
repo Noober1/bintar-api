@@ -4,7 +4,7 @@
         "title":"bintar-api",
         "version":"1.0"
     },
-    "host": "localhost:3000",
+    "host": "localhost:8080",
     "basePath": "/v1",
     "schemes": ["http"],
     "paths": {
@@ -12,6 +12,18 @@
             "get": {
                 "description": "Menampilkan konfigurasi bintar-api",
                 "tags": ["Configuration"],
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/": {
+            "get": {
+                "description": "Menampilkan statistik inventaris",
+                "tags": ["Inventaris"],
                 "parameters": [],
                 "responses": {
                     "200": {

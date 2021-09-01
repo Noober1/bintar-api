@@ -1,10 +1,10 @@
 const httpStatus = require('http-status');
+const _ = require('lodash');
 const db = require('../../../lib/db');
 const pagination = require('../../../lib/pagination');
 const Crypto = require('crypto');
 const { json } = require('body-parser');
-const dataMapping = require('./dataMapping');
-const _ = require('lodash');
+const dataMapping = require('../dataMapping');
 
 // basic data inventaris
 

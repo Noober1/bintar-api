@@ -12,8 +12,11 @@ module.exports = {
         dateCreated:item.tanggal_dibuat
     }),
     category: item => ({
-        id:'test',
+        id:item.id,
         name:item.nama,
         description:item.deskripsi
+    }),
+    input: item => ({
+        transactionType:'input'
     })
 }

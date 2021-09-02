@@ -17,6 +17,25 @@ module.exports = {
         description:item.deskripsi
     }),
     input: item => ({
-        transactionType:'input'
-    })
+        transactionType:'input',
+        id:item.id,
+        code:item.nomor,
+        inputCode:item.nomor_input,
+        quantity:item.kuantitas,
+        user:item.pengguna,
+        description:item.deskripsi,
+        division:item.divisi,
+        dateCreated:item.tanggal
+    }),
+    output: item => ({
+        transactionType:'output',
+        id:item.id,
+        code:item.nomor,
+        inputCode:item.nomor_input,
+        quantity:item.kuantitas,
+        user:item.pengguna,
+        staff:item.staff,
+        description:item.deskripsi,
+        dateCreated:item.tanggal
+    }),
 }

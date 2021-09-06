@@ -36,6 +36,15 @@ router
 	.route('/category/:id')
 	.get(inventaris.getCategoryById)
 
+// Data divisi
+router
+	.route('/division')
+	.get(inventaris.getDivision)
+
+router
+	.route('/division/:id')
+	.get(inventaris.getDivisionById)
+
 // Data input barang
 router
 	.route('/input')

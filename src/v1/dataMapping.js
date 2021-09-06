@@ -16,6 +16,11 @@ module.exports = {
         name:item.nama,
         description:item.deskripsi
     }),
+    division: item => ({
+        id:item.id,
+        name:item.nama,
+        description:item.deskripsi
+    }),
     input: item => ({
         transactionType:'input',
         id:item.id,

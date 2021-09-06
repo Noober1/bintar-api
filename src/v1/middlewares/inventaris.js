@@ -3,7 +3,6 @@ const _ = require('lodash');
 const db = require('../../../lib/db');
 const pagination = require('../../../lib/pagination');
 const Crypto = require('crypto');
-const { json } = require('body-parser');
 const dataMapping = require('../dataMapping');
 
 // basic data inventaris
@@ -108,8 +107,24 @@ const getBarangById = async(req,res,next) => {
             })
         }
 
+        const getInput = await db('inventaris_input')
+            .count('id as count')
+            .where('nomor', getData.nomor)
+            .first()
+        
+        const getOutput = await db('inventaris_output')
+            .count('id as count')
+            .where('nomor', getData.nomor)
+            .first()
+
         return res.json({
-            data: dataMapping.item(getData)
+            data: dataMapping.item(getData),
+            count: {
+                input: getInput.count,
+                output: getOutput.count
+            },
+            availableOutput:666,
+            availableAudit:666,
         })
 
     } catch (error) {
@@ -245,6 +260,35 @@ const getCategoryById = async(req,res,next) => {
     }
 }
 
+// cari semua divisi
+const getDivision = async(req,res,next) => {
+    try {
+        const getData = await db('inventaris_divisi')
+        return res.json(getData.map(dataMapping.division))
+    } catch (error) {
+        next(error)
+    }
+}
+
+// cari divisi berdasarkan id divisi
+const getDivisionById = async(req,res,next) => {
+    try {
+        const { id } = req.params
+        const getData = await db('inventaris_divisi')
+            .where({
+                id:id
+            })
+            .first()
+
+        if (!getData) return json.status(httpStatus.NOT_FOUND).json({
+            message:'Data not found'
+        })
+        return res.json(dataMapping.division(getData))
+    } catch (error) {
+        next(error)
+    }
+}
+
 //cari data barang input
 const getInput = async(req,res,next) => {
     try {
@@ -268,13 +312,22 @@ const getInputById = async(req,res,next) => {
             .where('id',req.params.id)
             .first()
 
-        if (!getData) {
-            return res.status(httpStatus.NOT_FOUND).json({
-                message:'Not Found'
-            })
-        }
+        if (!getData) return res.status(httpStatus.NOT_FOUND).json({
+            message:'Not Found'
+        })
 
-        return res.json(getData)
+        const getItem = await db('inventaris_barang')
+            .where('nomor', getData.nomor)
+            .first()
+
+        if (!getItem) return res.status(httpStatus.NOT_FOUND).json({
+            message:'Item Not Found'
+        })
+
+        return res.json({
+            itemData: dataMapping.item(getItem),
+            data:dataMapping.input(getData)
+        })
 
     } catch (error) {
         next(error)
@@ -329,5 +382,7 @@ module.exports = {
     getInputByIdBarang,
     getOutputByIdBarang,
     getOutput,
-    getOutputById
+    getOutputById,
+    getDivision,
+    getDivisionById
 }

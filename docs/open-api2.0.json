@@ -293,6 +293,40 @@
                     }
                 }
             }
+        },
+        "/inventaris/division": {
+            "get": {
+                "tags": ["Inventaris - Division"],
+                "description": "Menampilkan kategori - divisi barang yang terdaftar",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/inventaris/division/{id}": {
+            "get": {
+                "tags": ["Inventaris - Division"],
+                "description": "Menampilkan data divisi berdasarkan ID kategori",
+                "parameters": [
+                    {
+                        "in":"path",
+                        "name":"id",
+                        "required": true,
+                        "default": 1,
+                        "minimum": 1,
+                        "type": "number",
+                        "description": "ID divisi"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
         }
     }
 }

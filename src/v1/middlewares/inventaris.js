@@ -15,6 +15,7 @@ const inventarisIndex = async(req,res,next) => {
         const getInput = await db('inventaris_input').count('id as cid').first()
         const getOutput = await db('inventaris_output').count('id as cid').first()
         const getReturn = await db('inventaris_return').count('id as cid').first()
+        const getAudit = await db('inventaris_pemeriksaan').count('id as cid').first()
 
         return res.json({
             status:'active',
@@ -25,7 +26,7 @@ const inventarisIndex = async(req,res,next) => {
                 input:getInput.cid,
                 return:getReturn.cid,
                 output:getOutput.cid,
-                audit:114,
+                audit:getAudit.cid,
                 logs:116
             }
         })
@@ -231,6 +232,50 @@ const getOutputByIdBarang = async(req,res,next) => {
     }
 }
 
+const getAuditByIdBarang = async(req,res,next) => {
+    try {
+        let response = {}
+        const { id } = req.params
+
+        const getItem = await db('inventaris_barang')
+            .where({
+                id:id
+            })
+            .first()
+
+        if (!getItem) return res.status(httpStatus.NOT_FOUND).json({
+            message:'Item not found'
+        })
+
+        response = {
+            ...response,
+            itemDetail:getItem
+        }
+
+        const getData = await db('inventaris_pemeriksaan')
+            .where({
+                nomor:getItem.nomor
+            })
+            .paginate(pagination(req.page,req.limit));
+
+        getData.data = getData.data.map(dataMapping.output)
+
+        getData.data = getData.data.map(item => {
+            delete item['code']
+            return item
+        })
+
+        response = {
+            ...response,
+            ...getData
+        }
+
+        return res.json(response)
+    } catch (error) {
+        next(error)
+    }
+}
+
 // cari semua kategori
 const getCategory = async(req,res,next) => {
     try {
@@ -384,5 +429,6 @@ module.exports = {
     getOutput,
     getOutputById,
     getDivision,
-    getDivisionById
+    getDivisionById,
+    getAuditByIdBarang
 }

@@ -1,7 +1,9 @@
 const express = require('express')
-const { inventaris, checkPageAndLimit } = require('../middlewares')
-
 const router = express.Router()
+
+// Middlewares
+const { inventaris, checkPageAndLimit, utils } = require('../middlewares')
+
 
 router
 	.route('/')
@@ -26,6 +28,10 @@ router
 router
 	.route('/item/:id/output')
 	.get(checkPageAndLimit,inventaris.getOutputByIdBarang)
+
+router
+	.route('/item/:id/audit')
+	.get(checkPageAndLimit,inventaris.getAuditByIdBarang)
 
 // Data kategori barang
 router
@@ -62,5 +68,10 @@ router
 router
 	.route('/output/:id')
 	.get(checkPageAndLimit,inventaris.getOutputById)
+
+// Utils
+
+router
+	.use('/utils', utils)
 
 module.exports = router

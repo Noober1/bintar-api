@@ -29,7 +29,8 @@ const getConfig = async(req,res,next) => {
                     NoRegisterPattern:getData.PPDB_regex
                 },
                 inventaris: {
-                    isActive:false
+                    isActive:(getData.inventaris_status == 'aktif'),
+                    NoItemPattern: getData.inventaris_nomor_regex
                 }
 
             }

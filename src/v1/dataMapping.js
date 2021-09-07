@@ -43,4 +43,17 @@ module.exports = {
         description:item.deskripsi,
         dateCreated:item.tanggal
     }),
+    output: item => ({
+        transactionType:'audit',
+        id:item.id,
+        itemCode:item.nomor,
+        inputCode:item.nomor_input,
+        user:item.pengguna,
+        quantity:item.kuantitas,
+        itemLightBroken:item.barang_rusak_ringan,
+        itemHeavyBroken:item.barang_rusak_ringan,
+        itemLost:item.barang_hilang,
+        description:item.deskripsi,
+        dateCreated:item.tanggal
+    }),
 }

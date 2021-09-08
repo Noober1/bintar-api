@@ -1,4 +1,5 @@
 'use strict'
+require('./lib/utils')
 const express = require('express')
 const httpErrors = require('http-errors')
 const pino = require('pino')

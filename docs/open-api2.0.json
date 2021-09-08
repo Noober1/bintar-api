@@ -327,6 +327,18 @@
                     }
                 }
             }
+        },
+        "/inventaris/utils/generate-item-number": {
+            "get": {
+                "tags": ["Inventaris - Utils"],
+                "description": "Generate nomor barang",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
         }
     }
 }

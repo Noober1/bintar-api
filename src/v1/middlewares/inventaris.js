@@ -4,12 +4,13 @@ const db = require('../../../lib/db');
 const pagination = require('../../../lib/pagination');
 const Crypto = require('crypto');
 const dataMapping = require('../dataMapping');
-
+const getDataFromDb = require('../utils/getDataFromDb')
 // basic data inventaris
 
 const inventarisIndex = async(req,res,next) => {
 
     try {
+        const { inventaris_status, inventaris_nomor_regex } = await getDataFromDb()
         const getItem = await db('inventaris_barang').count('id as cid').first()
         const getCategory = await db('inventaris_kategori').count('id as cid').first()
         const getInput = await db('inventaris_input').count('id as cid').first()
@@ -18,8 +19,9 @@ const inventarisIndex = async(req,res,next) => {
         const getAudit = await db('inventaris_pemeriksaan').count('id as cid').first()
 
         return res.json({
-            status:'active',
+            isActive:(inventaris_status === 'aktif'),
             maintenanceMode:false,
+            itemNumberPatter:inventaris_nomor_regex,
             counter:{
                 item:getItem.cid,
                 category:getCategory.cid,

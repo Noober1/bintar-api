@@ -73,6 +73,6 @@ router
 // Utils
 
 router
-	.use('/utils', cache.routeJSON(), utils)
+	.use(utils)
 
 module.exports = router

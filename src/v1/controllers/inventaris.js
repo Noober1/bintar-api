@@ -1,5 +1,6 @@
 const express = require('express')
 const router = express.Router()
+const cache = require('../../../lib/cache')
 
 // Middlewares
 const { inventaris, checkPageAndLimit, utils } = require('../middlewares')
@@ -7,7 +8,7 @@ const { inventaris, checkPageAndLimit, utils } = require('../middlewares')
 
 router
 	.route('/')
-	.get(inventaris.inventarisIndex)
+	.get(cache.routeJSON(), inventaris.inventarisIndex)
 
 router
 	.post('/auth',inventaris.loginAuth)
@@ -19,7 +20,7 @@ router
 
 router
 	.route('/item/:id')
-	.get(inventaris.getBarangById)
+	.get(cache.routeJSON(),inventaris.getBarangById)
 
 router
 	.route('/item/:id/input')
@@ -36,20 +37,20 @@ router
 // Data kategori barang
 router
 	.route('/category')
-	.get(inventaris.getCategory)
+	.get(cache.routeJSON(),inventaris.getCategory)
 
 router
 	.route('/category/:id')
-	.get(inventaris.getCategoryById)
+	.get(cache.routeJSON(),inventaris.getCategoryById)
 
 // Data divisi
 router
 	.route('/division')
-	.get(inventaris.getDivision)
+	.get(cache.routeJSON(),inventaris.getDivision)
 
 router
 	.route('/division/:id')
-	.get(inventaris.getDivisionById)
+	.get(cache.routeJSON(),inventaris.getDivisionById)
 
 // Data input barang
 router
@@ -72,6 +73,6 @@ router
 // Utils
 
 router
-	.use('/utils', utils)
+	.use('/utils', cache.routeJSON(), utils)
 
 module.exports = router

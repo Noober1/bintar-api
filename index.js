@@ -49,15 +49,6 @@ module.exports = function main (options, cb) {
 	// Common middleware
 	// app.use(/* ... */)
 
-	//utils
-
-	var cacheLoadConfig = {}
-	const getConfigFromDb = require('./src/v1/utils/configFromDb')(cacheLoadConfig)
-	app.use((req,res,next) => {
-		req.configDb = getConfigFromDb
-		next()
-	})
-
 	// cors configuration
 	app.use(cors())
 

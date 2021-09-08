@@ -5,7 +5,7 @@ const router = express.Router()
 
 router.get('/', async(req,res,next) => {
     try {
-        return res.send(req.configDb.get())
+        return res.send('hello')
     } catch (error) {
         next(error)
     }

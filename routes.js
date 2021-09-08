@@ -3,7 +3,7 @@ const api = require('./src/v1')
 
 module.exports = function (app, opts) {
 	// Setup routes, middleware, and handlers
-	app.all('/', (req,res) => {
+	app.all('/',(req,res) => {
 		return res.json({
 			message:'OK'
 		})

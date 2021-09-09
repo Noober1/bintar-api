@@ -1,9 +1,11 @@
 const express = require('express')
 const router = express.Router()
 const cache = require('../../../lib/cache')
+const { check, validationResult } = require('express-validator');
 
 // Middlewares
-const { inventaris, checkPageAndLimit, utils } = require('../middlewares')
+const { inventaris, checkPageAndLimit, utils } = require('../middlewares');
+const { validationHandler, validatorRules } = require('../utils');
 
 
 router
@@ -17,6 +19,11 @@ router
 router
 	.route('/item')
 	.get(checkPageAndLimit,inventaris.getAllBarang)
+	.post(
+		validatorRules.item(),
+		validationHandler,
+		inventaris.postBarang
+	)
 
 router
 	.route('/item/:id')

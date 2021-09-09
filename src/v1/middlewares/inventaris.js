@@ -5,8 +5,8 @@ const pagination = require('../../../lib/pagination');
 const Crypto = require('crypto');
 const dataMapping = require('../dataMapping');
 const getDataFromDb = require('../utils/getDataFromDb')
-// basic data inventaris
 
+// basic data inventaris
 const inventarisIndex = async(req,res,next) => {
 
     try {
@@ -130,6 +130,17 @@ const getBarangById = async(req,res,next) => {
             availableAudit:666,
         })
 
+    } catch (error) {
+        next(error)
+    }
+}
+
+// insert barang
+const postBarang = async(req,res,next) => {
+    try {
+        return res.json({
+            test:'C.19/J9G12/LAP.KOM/2021'
+        })
     } catch (error) {
         next(error)
     }
@@ -432,5 +443,6 @@ module.exports = {
     getOutputById,
     getDivision,
     getDivisionById,
-    getAuditByIdBarang
+    getAuditByIdBarang,
+    postBarang
 }

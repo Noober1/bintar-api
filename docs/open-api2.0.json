@@ -90,6 +90,53 @@
                         "description": "OK"
                     }
                 }
+            },
+            "post": {
+                "description": "Menambah data barang",
+                "consumes":["application/json","application/x-www-form-urlencoded"],
+                "tags": ["Inventaris - Item"],
+                "parameters": [
+                    {
+                        "in":"body",
+                        "name":"item",
+                        "schema": {
+                            "required": ["code","name","brand","model","category","description","returnable","unit"],
+                            "type" : "object",
+                            "properties": {
+                                "code":{
+                                    "type":"string"
+                                },
+                                "name":{
+                                    "type":"string"
+                                },
+                                "brand":{
+                                    "type":"string"
+                                },
+                                "model":{
+                                    "type":"string"
+                                },
+                                "category":{
+                                    "type":"string"
+                                },
+                                "description":{
+                                    "type":"string"
+                                },
+                                "returnable":{
+                                    "type":"string"
+                                },
+                                "unit":{
+                                    "type":"string"
+                                }
+                            }
+
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
             }
         },
         "/inventaris/item/{id}": {
@@ -328,7 +375,7 @@
                 }
             }
         },
-        "/inventaris/utils/generate-item-number": {
+        "/inventaris/generate-item-number": {
             "get": {
                 "tags": ["Inventaris - Utils"],
                 "description": "Generate nomor barang",

@@ -1,10 +1,11 @@
 const httpStatus = require('http-status');
 const _ = require('lodash');
-const db = require('../../../lib/db');
-const pagination = require('../../../lib/pagination');
+const db = require('../../../../lib/db');
+const pagination = require('../../../../lib/pagination');
 const Crypto = require('crypto');
-const dataMapping = require('../dataMapping');
-const getDataFromDb = require('../utils/getDataFromDb')
+const dataMapping = require('../../dataMapping');
+const getDataFromDb = require('../../utils/getDataFromDb');
+const { sendError } = require('../../utils');
 
 // basic data inventaris
 const inventarisIndex = async(req,res,next) => {
@@ -137,9 +138,59 @@ const getBarangById = async(req,res,next) => {
 
 // insert barang
 const postBarang = async(req,res,next) => {
+    const { code, category, ...data } = req.body
+
     try {
+        const getItemByCode = await db('inventaris_barang').select('nomor')
+            .where('nomor', code)
+        
+        if (getItemByCode.length > 0) {
+            throw new sendError({
+                status:400,
+                code:'DATA_DUPLICATED',
+                message:'Data with same item code already exist'
+            })
+        }
+
+        const getCategories = await db('inventaris_kategori').select('nama').where('nama', category)
+
+        // jika gagal mengambil data dari database
+        if (!getCategories) {
+            throw new sendError({
+                code:'ERR_GET_DATA_FROM_DATABASE',
+                message: 'Failed to get category data from database'
+            })
+        }
+
+        if (getCategories.length < 1) {
+            throw new sendError({
+                status:400,
+                code:'CATEGORY_DOESNT_EXIST',
+                message: 'Category doesn\'t exist'
+            })
+        }
+
+        const insertToDatabase = await db('inventaris_barang').insert({
+            nomor:code,
+            nama:data.name,
+            merk:data.brand,
+            model:data.model,
+            kategori:category,
+            satuan:data.unit,
+            deskripsi:data.description || '',
+            returnable: data.returnable ? 'Y':'N',
+            tanggal_dibuat: new Date()
+        })
+
+        if (!insertToDatabase) {
+            throw new sendError({
+                code:'ERR_INSERT_DATA',
+                message:'Failed insert data to database'
+            })
+        }
+
         return res.json({
-            test:'C.19/J9G12/LAP.KOM/2021'
+            message:'Data saved'
         })
     } catch (error) {
         next(error)

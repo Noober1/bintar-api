@@ -4,9 +4,8 @@ const cache = require('../../../lib/cache')
 const { check, validationResult } = require('express-validator');
 
 // Middlewares
-const { inventaris, checkPageAndLimit, utils } = require('../middlewares');
-const { validationHandler, validatorRules } = require('../utils');
-
+const { inventaris, utils } = require('../middlewares');
+const { validationHandler,checkPageAndLimit, validatorRules } = require('../utils');
 
 router
 	.route('/')

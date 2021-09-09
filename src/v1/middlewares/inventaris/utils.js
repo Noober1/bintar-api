@@ -1,7 +1,7 @@
 const express = require('express')
-const db = require('../../../lib/db')
-const { getDataFromDb, randomString } = require('../utils')
-const cache = require('../../../lib/cache')
+const db = require('../../../../lib/db')
+const { getDataFromDb, randomString } = require('../../utils')
+const cache = require('../../../../lib/cache')
 
 const router = express.Router()
 

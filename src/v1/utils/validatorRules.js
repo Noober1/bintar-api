@@ -3,6 +3,7 @@ const { check,body } = require('express-validator');
 const msg = {
     isNotEmpty:'Data can\'t be empty',
     isString: 'Data expected string',
+    isNumeric: 'Data expected numeric',
     isBoolean: 'Data expected boolean',
     isLength: (min = 1,max = 1) => `Data length invalid: min length ${min} character(s), max length ${max} character(s) required`,
     isIn: list => {
@@ -59,6 +60,34 @@ module.exports = {
                 .not().isEmpty().withMessage(msg.isNotEmpty)
                 .isString().withMessage(msg.isString)
                 .isLength({max:10}).withMessage(msg.isLength(0,10)),
+        ]
+    },
+    input: () => {
+        return [
+            body('code')
+                .not().isEmpty().withMessage(msg.isNotEmpty)
+                .isString().withMessage(msg.isString)
+                .isLength({max:50}).withMessage(msg.isLength(1,50)),
+            body('inputCode')
+                .not().isEmpty().withMessage(msg.isNotEmpty)
+                .isString().withMessage(msg.isString)
+                .isLength({max:5}).withMessage(msg.isLength(1,5)),
+            body('quantity')
+                .not().isEmpty().withMessage(msg.isNotEmpty)
+                .isNumeric().withMessage(msg.isNumeric)
+                .isLength({max:5}).withMessage(msg.isLength(1,5)),
+            body('user')
+                .not().isEmpty().withMessage(msg.isNotEmpty)
+                .isString().withMessage(msg.isString)
+                .isLength({max:50}).withMessage(msg.isLength(1,50)),
+            body('description')
+                    .optional()
+                    .isString().withMessage(msg.isString)
+                    .isLength({max:500}).withMessage(msg.isLength(0,500)),
+            body('storedAt')
+                .not().isEmpty().withMessage(msg.isNotEmpty)
+                .isString().withMessage(msg.isString)
+                .isLength({max:30}).withMessage(msg.isLength(1,30))
         ]
     }
 }

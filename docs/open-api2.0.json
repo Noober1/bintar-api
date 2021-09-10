@@ -122,7 +122,7 @@
                                     "type":"string"
                                 },
                                 "returnable":{
-                                    "type":"string"
+                                    "type":"boolean"
                                 },
                                 "unit":{
                                     "type":"string"
@@ -159,6 +159,50 @@
                         "description": "OK"
                     }
                 }
+            },
+            "put": {
+                "description": "Mengubah data barang berdasarkan id barang",
+                "consumes":["application/json","application/x-www-form-urlencoded"],
+                "tags": ["Inventaris - Item"],
+                "parameters": [
+                    {
+                        "in":"body",
+                        "name":"item",
+                        "schema": {
+                            "required": ["name","brand","model","category","description","returnable","unit"],
+                            "type" : "object",
+                            "properties": {
+                                "name":{
+                                    "type":"string"
+                                },
+                                "brand":{
+                                    "type":"string"
+                                },
+                                "model":{
+                                    "type":"string"
+                                },
+                                "category":{
+                                    "type":"string"
+                                },
+                                "description":{
+                                    "type":"string"
+                                },
+                                "returnable":{
+                                    "type":"boolean"
+                                },
+                                "unit":{
+                                    "type":"string"
+                                }
+                            }
+
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
             }
         },
         "/inventaris/item/{id}/input": {
@@ -174,6 +218,47 @@
                         "minimum": 1,
                         "type": "number",
                         "description": "ID Barang"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            },
+            "post": {
+                "description": "Menambah data input berdasarkan id barang",
+                "consumes":["application/json","application/x-www-form-urlencoded"],
+                "tags": ["Inventaris - Item"],
+                "parameters": [
+                    {
+                        "in":"body",
+                        "name":"item",
+                        "schema": {
+                            "required": ["code","inputCode","quantity","user","description","storedAt"],
+                            "type" : "object",
+                            "properties": {
+                                "code":{
+                                    "type":"string"
+                                },
+                                "inputCode":{
+                                    "type":"string"
+                                },
+                                "quantity":{
+                                    "type":"number",
+                                    "default":1
+                                },
+                                "user":{
+                                    "type":"string"
+                                },
+                                "description":{
+                                    "type":"string"
+                                },
+                                "storedAt":{
+                                    "type":"string"
+                                }
+                            }
+                        }
                     }
                 ],
                 "responses": {
@@ -366,6 +451,40 @@
                         "minimum": 1,
                         "type": "number",
                         "description": "ID divisi"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/inventaris/warehouse": {
+            "get": {
+                "tags": ["Inventaris - Warehouse"],
+                "description": "Menampilkan daftar tempat penyimpanan barang(warehouse)",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/inventaris/warehouse/{id}": {
+            "get": {
+                "tags": ["Inventaris - Warehouse"],
+                "description": "Menampilkan data tempat penyimpanan barang(warehouse) berdasarkan ID warehouse",
+                "parameters": [
+                    {
+                        "in":"path",
+                        "name":"id",
+                        "required": true,
+                        "default": 1,
+                        "minimum": 1,
+                        "type": "number",
+                        "description": "ID warehouse"
                     }
                 ],
                 "responses": {

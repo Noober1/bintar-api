@@ -136,6 +136,60 @@ const getBarangById = async(req,res,next) => {
     }
 }
 
+const putBarangById = async(req,res,next) => {
+    const { category, ...data } = req.body
+
+    try {
+        const getBarangById = await db('inventaris_barang').select('id').where('id',req.params.id)
+        const getCategories = await db('inventaris_kategori').select('nama').where('nama', category)
+
+        // if barang data count under 1, that mean no data
+        if (getBarangById.length < 1) {
+            throw new sendError({
+                status:400,
+                code:'ID_NOT_FOUND',
+                message: 'ID not found'
+            })
+        }
+
+        // if category data count under 1, that mean no data
+        if (getCategories.length < 1) {
+            throw new sendError({
+                status:400,
+                code:'CATEGORY_NOT_FOUND',
+                message: 'Category not found'
+            })
+        }
+
+        const savingToDb = await db('inventaris_barang')
+            .where('id',req.params.id)
+            .update({
+                nama:data.name,
+                merk:data.brand,
+                model:data.model,
+                kategori:category,
+                satuan:data.unit,
+                returnable: data.returnable ? 'Y':'N',
+                deskripsi:data.description || ''
+            })
+
+        if (!savingToDb) {
+            throw new sendError({
+                status:400,
+                code:'ERR_UPDATE_DATA',
+                message:'Error updating data'
+            })
+        }
+
+        return res.json({
+            message:'Data saved'
+        })
+
+    } catch (error) {
+        next(error)
+    }
+}
+
 // insert barang
 const postBarang = async(req,res,next) => {
     const { code, category, ...data } = req.body
@@ -249,6 +303,10 @@ const getInputByIdBarang = async(req,res,next) => {
     } catch (error) {
         next(error)
     }
+}
+
+const postInputByIdBarang = async(req,res,next) => {
+    return res.send('ehe')
 }
 
 // cari daftar output berdasarkan id barang
@@ -379,6 +437,16 @@ const getDivision = async(req,res,next) => {
     }
 }
 
+// cari semua gudang penyimpanan
+const getWarehouse = async(req,res,next) => {
+    try {
+        const getData = await db('inventaris_gudang')
+        return res.json(getData.map(dataMapping.warehouse))
+    } catch (error) {
+        next(error)
+    }
+}
+
 // cari divisi berdasarkan id divisi
 const getDivisionById = async(req,res,next) => {
     try {
@@ -393,6 +461,25 @@ const getDivisionById = async(req,res,next) => {
             message:'Data not found'
         })
         return res.json(dataMapping.division(getData))
+    } catch (error) {
+        next(error)
+    }
+}
+
+// cari gudang penyimpanan berdasarkan id gudang penyimpanan
+const getWarehouseById = async(req,res,next) => {
+    try {
+        const { id } = req.params
+        const getData = await db('inventaris_gudang')
+            .where({
+                id:id
+            })
+            .first()
+
+        if (!getData) return json.status(httpStatus.NOT_FOUND).json({
+            message:'Data not found'
+        })
+        return res.json(dataMapping.warehouse(getData))
     } catch (error) {
         next(error)
     }
@@ -483,16 +570,20 @@ module.exports = {
     inventarisIndex,
     getAllBarang,
     getBarangById,
+    putBarangById,
     loginAuth,
     getCategory,
     getCategoryById,
     getInput,
     getInputById,
     getInputByIdBarang,
+    postInputByIdBarang,
     getOutputByIdBarang,
     getOutput,
     getOutputById,
     getDivision,
+    getWarehouse,
+    getWarehouseById,
     getDivisionById,
     getAuditByIdBarang,
     postBarang

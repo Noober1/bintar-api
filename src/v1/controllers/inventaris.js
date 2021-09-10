@@ -1,7 +1,6 @@
-const express = require('express')
+const express = require('express');
 const router = express.Router()
 const cache = require('../../../lib/cache')
-const { check, validationResult } = require('express-validator');
 
 // Middlewares
 const { inventaris, utils } = require('../middlewares');
@@ -27,10 +26,16 @@ router
 router
 	.route('/item/:id')
 	.get(cache.routeJSON(),inventaris.getBarangById)
+	.put(inventaris.putBarangById)
 
 router
 	.route('/item/:id/input')
 	.get(checkPageAndLimit,inventaris.getInputByIdBarang)
+	.post(
+		validatorRules.input(),
+		validationHandler,
+		inventaris.postInputByIdBarang
+	)
 
 router
 	.route('/item/:id/output')
@@ -57,6 +62,15 @@ router
 router
 	.route('/division/:id')
 	.get(cache.routeJSON(),inventaris.getDivisionById)
+
+// Data gudang penyimpanan
+router
+	.route('/warehouse')
+	.get(cache.routeJSON(),inventaris.getWarehouse)
+
+router
+	.route('/warehouse/:id')
+	.get(cache.routeJSON(),inventaris.getWarehouseById)
 
 // Data input barang
 router

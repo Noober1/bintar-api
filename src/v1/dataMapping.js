@@ -21,6 +21,11 @@ module.exports = {
         name:item.nama,
         description:item.deskripsi
     }),
+    warehouse: item => ({
+        id:item.id,
+        name:item.nama,
+        description:item.deskripsi
+    }),
     input: item => ({
         transactionType:'input',
         id:item.id,
@@ -29,7 +34,7 @@ module.exports = {
         quantity:item.kuantitas,
         user:item.pengguna,
         description:item.deskripsi,
-        division:item.divisi,
+        storedAt:item.tempat_disimpan,
         dateCreated:item.tanggal
     }),
     output: item => ({

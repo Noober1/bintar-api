@@ -64,14 +64,6 @@ module.exports = {
     },
     input: () => {
         return [
-            body('code')
-                .not().isEmpty().withMessage(msg.isNotEmpty)
-                .isString().withMessage(msg.isString)
-                .isLength({max:50}).withMessage(msg.isLength(1,50)),
-            body('inputCode')
-                .not().isEmpty().withMessage(msg.isNotEmpty)
-                .isString().withMessage(msg.isString)
-                .isLength({max:5}).withMessage(msg.isLength(1,5)),
             body('quantity')
                 .not().isEmpty().withMessage(msg.isNotEmpty)
                 .isNumeric().withMessage(msg.isNumeric)

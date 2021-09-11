@@ -5,7 +5,7 @@ const pagination = require('../../../../lib/pagination');
 const Crypto = require('crypto');
 const dataMapping = require('../../dataMapping');
 const getDataFromDb = require('../../utils/getDataFromDb');
-const { sendError } = require('../../utils');
+const { sendError, randomString } = require('../../utils');
 
 // basic data inventaris
 const inventarisIndex = async(req,res,next) => {
@@ -306,7 +306,120 @@ const getInputByIdBarang = async(req,res,next) => {
 }
 
 const postInputByIdBarang = async(req,res,next) => {
-    return res.send('ehe')
+    try {
+
+        // cari data item berdasarkan param id
+        const getData = await db('inventaris_barang').select('id', 'returnable', 'nomor').where('id',req.params.id).first()
+
+        // jika data barang tidak ditemukan, throw error
+        if(!getData){
+            throw new sendError({
+                status:400,
+                code:'ITEM_NOT_FOUND',
+                message:'Item not found'
+            })
+        }
+
+        // cari data user di database
+        const getUser = await db('dbusers').select('email').where('email', req.body.user).first()
+
+        if(!getUser) {
+            throw new sendError({
+                status:400,
+                code:'USER_NOT_FOUND',
+                message:'User not found'
+            })
+        }
+
+        // cari data gudang di database
+        const getStoredAt = await db('inventaris_gudang').select('nama').where('nama', req.body.storedAt).first()
+
+        if(!getStoredAt) {
+            throw new sendError({
+                status:400,
+                code:'WAREHOUSE_NOT_FOUND',
+                message:'Warehouse not found'
+            })
+        }
+        
+        const defaultFormData = {
+            nomor: getData.nomor,
+            nomor_input: '',
+            kuantitas: req.body.quantity,
+            pengguna: req.body.user,
+            deskripsi: req.body.description,
+            tempat_disimpan: req.body.storedAt,
+            tanggal: new Date()
+        }
+
+        if (getData.returnable === 'Y') {
+            const generateFormData = async() => {
+                // buat variable untuk data yang akan dikirim
+                let formData = []
+
+                // untuk menampung id input yang sudah digenerate untuk pengecekan duplikasi
+                let findCode = []
+
+                for (let index = 0; index < req.body.quantity; index++) {
+                    let tempData = {}
+                    let randomInputCode = randomString(5).toUpperCase()
+                    tempData.kuantitas = 1
+                    tempData.nomor_input = randomInputCode
+                    let toPush = {
+                        ...defaultFormData,
+                        ...tempData
+                    }
+                    findCode.push(randomInputCode)
+                    formData.push(toPush)
+                }
+
+                // cari data yang ada di array findCode, jika hasil tidak nihil berarti data duplikat
+                const checkDuplicationInput = await db('inventaris_input').whereIn('nomor_input', findCode).select('nomor_input')
+
+                // jika error mencari data di DB
+                if (!checkDuplicationInput) {
+                    console.log('Data duplikat')
+                    return false
+                // jika data tidak nihil
+                } else if (checkDuplicationInput.length > 1) {
+                    generateFormData()
+                // semua OK
+                } else {
+                    return formData
+                }
+            }
+
+            const formData = await generateFormData()
+
+            if (!formData) {
+                throw new sendError({
+                    status: 500,
+                    code: 'ERR_GENERATE_FORMDATA',
+                    message: 'Error when generating formData'
+                })
+            }
+
+            const inserting = await db('inventaris_input').insert(formData)
+
+            if (!inserting) {
+                throw new sendError({
+                    status: 500,
+                    code: 'ERR_INSERT_DATA',
+                    message: 'Error when inserting data'
+                })
+            }
+            
+            return res.json({
+                message:'Data saved',
+                data:inserting
+            })
+        } else {
+            return res.json(formData)
+        }
+
+    } catch (error) {
+        next(error)
+    }
 }
 
 // cari daftar output berdasarkan id barang

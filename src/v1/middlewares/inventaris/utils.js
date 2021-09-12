@@ -2,6 +2,7 @@ const express = require('express')
 const db = require('../../../../lib/db')
 const { getDataFromDb, randomString } = require('../../utils')
 const cache = require('../../../../lib/cache')
+const pagination = require('../../../../lib/pagination')
 
 const router = express.Router()
 
@@ -38,6 +39,25 @@ router.get('/generate-item-number', async(req,res,next) => {
             pattern: inventaris_nomor_regex,
             generated:generatedNumber
         })
+    } catch (error) {
+        next(error)
+    }
+})
+
+router.get('/logs', cache.routeJSON(), async(req,res,next) => {
+    try {
+        const getData = await db('dblog')
+            .where('name','like','inventaris_%')
+            .paginate(pagination(req.query.page,req.query.limit))
+        
+        if (getData) {
+            return res.json(getData)
+        } else {
+            throw new sendError({
+                code: 'ERR_GET_LOG',
+                message:'Failed to get log data'
+            })
+        }
     } catch (error) {
         next(error)
     }

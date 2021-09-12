@@ -1,3 +1,12 @@
+const isJSON = (str) => {
+    try {
+        JSON.parse(str);
+    } catch (e) {
+        return false;
+    }
+    return true;
+}
+
 module.exports = {
     item: item => ({
         id:item.id,
@@ -61,4 +70,10 @@ module.exports = {
         description:item.deskripsi,
         dateCreated:item.tanggal
     }),
+    log: item => ({
+        id: item.id,
+        date: item.date,
+        name: item.name,
+        data: isJSON(item.data) ? JSON.parse(item.data) : item.data
+    })
 }

@@ -235,15 +235,9 @@
                         "in":"body",
                         "name":"item",
                         "schema": {
-                            "required": ["code","inputCode","quantity","user","description","storedAt"],
+                            "required": ["code","quantity","user","description","storedAt"],
                             "type" : "object",
                             "properties": {
-                                "code":{
-                                    "type":"string"
-                                },
-                                "inputCode":{
-                                    "type":"string"
-                                },
                                 "quantity":{
                                     "type":"number",
                                     "default":1
@@ -499,6 +493,35 @@
                 "tags": ["Inventaris - Utils"],
                 "description": "Generate nomor barang",
                 "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/inventaris/logs": {
+            "get": {
+                "tags": ["Inventaris - Utils"],
+                "description": "Logs",
+                "parameters": [
+                    {
+                        "in":"path",
+                        "name":"page",
+                        "default": 1,
+                        "minimum": 1,
+                        "type": "number",
+                        "description": "Halaman yang ditampilkan"
+                    },
+                    {
+                        "in":"path",
+                        "name":"limit",
+                        "default":10,
+                        "minimum": 1,
+                        "type": "number",
+                        "description": "Limit data yang ditampilkan"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK"

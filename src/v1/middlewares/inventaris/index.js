@@ -6,6 +6,7 @@ const Crypto = require('crypto');
 const dataMapping = require('../../dataMapping');
 const getDataFromDb = require('../../utils/getDataFromDb');
 const { sendError, randomString } = require('../../utils');
+const { logger } = require('../../../../lib/logger');
 
 // basic data inventaris
 const inventarisIndex = async(req,res,next) => {
@@ -80,6 +81,7 @@ const loginAuth = async(req,res,next) => {
 const getAllBarang = async(req,res,next) => {
     try {
         const getData = await db('inventaris_barang')
+            .orderBy('tanggal_dibuat','desc')
             .paginate(pagination(req.page,req.limit));
 
         getData.data = getData.data.map(dataMapping.item)
@@ -112,23 +114,55 @@ const getBarangById = async(req,res,next) => {
         }
 
         const getInput = await db('inventaris_input')
-            .count('id as count')
+            .sum({ count: 'kuantitas' })
             .where('nomor', getData.nomor)
             .first()
         
         const getOutput = await db('inventaris_output')
-            .count('id as count')
+            .sum({ count: 'kuantitas' })
+            .where('nomor', getData.nomor)
+            .first()
+
+        const getAudit = await db('inventaris_pemeriksaan')
+            .sum({
+                good: 'kondisi_bagus',
+                lightBroken: 'kondisi_rusak_ringan',
+                heavyBroken: 'kondisi_rusak_berat',
+                lost: 'kondisi_hilang'
+            })
+            .where('nomor', getData.nomor)
+            .first()
+
+        const getReturn = await db('inventaris_return')
+            .sum({
+                good: 'kondisi_bagus',
+                lightBroken: 'kondisi_rusak_ringan',
+                heavyBroken: 'kondisi_rusak_berat',
+                lost: 'kondisi_hilang'
+            })
             .where('nomor', getData.nomor)
             .first()
 
         return res.json({
             data: dataMapping.item(getData),
-            count: {
-                input: getInput.count,
-                output: getOutput.count
-            },
-            availableOutput:666,
-            availableAudit:666,
+            detail: {
+                count: {
+                    input: getInput.count ?? 0,
+                    output: getOutput.count ?? 0,
+                    audit: {
+                        good: getAudit.good ?? 0,
+                        lightBroken: getAudit.lightBroken ?? 0,
+                        heavyBroken: getAudit.heavyBroken ?? 0,
+                        lost: getAudit.lost ?? 0,
+                    },
+                    return: {
+                        good: getReturn.good ?? 0,
+                        lightBroken: getReturn.lightBroken ?? 0,
+                        heavyBroken: getReturn.heavyBroken ?? 0,
+                        lost: getReturn.lost ?? 0,
+                    }
+                }
+            }
         })
 
     } catch (error) {
@@ -136,6 +170,7 @@ const getBarangById = async(req,res,next) => {
     }
 }
 
+// update barang berdasarkan id barang
 const putBarangById = async(req,res,next) => {
     const { category, ...data } = req.body
 
@@ -161,25 +196,29 @@ const putBarangById = async(req,res,next) => {
             })
         }
 
-        const savingToDb = await db('inventaris_barang')
-            .where('id',req.params.id)
-            .update({
-                nama:data.name,
-                merk:data.brand,
-                model:data.model,
-                kategori:category,
-                satuan:data.unit,
-                returnable: data.returnable ? 'Y':'N',
-                deskripsi:data.description || ''
-            })
+        const dataToUpdate = {
+            nama:data.name,
+            merk:data.brand,
+            model:data.model,
+            kategori:category,
+            satuan:data.unit,
+            returnable: data.returnable ? 'Y':'N',
+            deskripsi:data.description || ''
+        }
 
-        if (!savingToDb) {
+        const updating = await db('inventaris_barang')
+            .where('id',req.params.id)
+            .update(dataToUpdate)
+
+        if (!updating) {
             throw new sendError({
                 status:400,
                 code:'ERR_UPDATE_DATA',
                 message:'Error updating data'
             })
         }
+
+        await logger('update_item','Berhasil memperbarui data barang', 'cucu.ruhiyatna3@gmail.com' ,JSON.stringify(dataToUpdate))
 
         return res.json({
             message:'Data saved'
@@ -224,7 +263,7 @@ const postBarang = async(req,res,next) => {
             })
         }
 
-        const insertToDatabase = await db('inventaris_barang').insert({
+        const dataToinsert = {
             nomor:code,
             nama:data.name,
             merk:data.brand,
@@ -234,7 +273,9 @@ const postBarang = async(req,res,next) => {
             deskripsi:data.description || '',
             returnable: data.returnable ? 'Y':'N',
             tanggal_dibuat: new Date()
-        })
+        }
+
+        const insertToDatabase = await db('inventaris_barang').insert(dataToinsert)
 
         if (!insertToDatabase) {
             throw new sendError({
@@ -242,6 +283,8 @@ const postBarang = async(req,res,next) => {
                 message:'Failed insert data to database'
             })
         }
+
+        await logger('insert_item','Berhasil membuat data barang', null, JSON.stringify(dataToinsert))
 
         return res.json({
             message:'Data saved'
@@ -266,9 +309,13 @@ const getInputByIdBarang = async(req,res,next) => {
             .first()
 
         // jika item tidak didapatkan, kirim response not found
-        if (!getItem) return res.status(httpStatus.NOT_FOUND).json({
-            message:'Item not found'
-        })
+        if (!getItem) {
+            throw new sendError({
+                status: 400,
+                message: 'Data not found',
+                code: 'NOT_FOUND'
+            })
+        }
 
         // insert item data to response variable
         sendResponse = {
@@ -281,6 +328,7 @@ const getInputByIdBarang = async(req,res,next) => {
             .where({
                 nomor:getItem.nomor
             })
+            .orderBy('tanggal','desc')
             .paginate(pagination(req.page,req.limit));
 
         // mapping struktur data input
@@ -305,6 +353,7 @@ const getInputByIdBarang = async(req,res,next) => {
     }
 }
 
+// insert data input berdasarkan id barang
 const postInputByIdBarang = async(req,res,next) => {
     try {
 
@@ -345,7 +394,7 @@ const postInputByIdBarang = async(req,res,next) => {
         const defaultFormData = {
             nomor: getData.nomor,
             nomor_input: '',
-            kuantitas: req.body.quantity,
+            kuantitas: _.isNaN(req.body.quantity) ? 1 : parseInt(req.body.quantity),
             pengguna: req.body.user,
             deskripsi: req.body.description,
             tempat_disimpan: req.body.storedAt,
@@ -374,7 +423,7 @@ const postInputByIdBarang = async(req,res,next) => {
                 }
 
                 // cari data yang ada di array findCode, jika hasil tidak nihil berarti data duplikat
-                const checkDuplicationInput = await db('inventaris_input').whereIn('nomor_input', findCode).select('nomor_input')
+                const checkDuplicationInput = await db('inventaris_input').where('nomor', getData.nomor).whereIn('nomor_input', findCode).select('nomor_input')
 
                 // jika error mencari data di DB
                 if (!checkDuplicationInput) {
@@ -385,11 +434,11 @@ const postInputByIdBarang = async(req,res,next) => {
                     generateFormData()
                 // semua OK
                 } else {
-                    return formData
+                    return { formData, codes: findCode }
                 }
             }
 
-            const formData = await generateFormData()
+            const { formData, codes } = await generateFormData()
 
             if (!formData) {
                 throw new sendError({
@@ -408,15 +457,180 @@ const postInputByIdBarang = async(req,res,next) => {
                     message: 'Error when inserting data'
                 })
             }
+
+            await logger('insert_input','Berhasil membuat data input', 'cucu.ruhiyatna3@gmail.com', JSON.stringify(formData))
             
             return res.json({
                 message:'Data saved',
-                data:inserting
+                data: {
+                    code: getData.nomor,
+                    inputCode: codes
+                },
+                responseInsert:inserting
             })
         } else {
-            return res.json(formData)
+            const generateInputCode = async() => {
+                const createInputCode = randomString(5).toUpperCase()
+                const checkDuplication = await db('inventaris_input').where({
+                    'nomor': getData.nomor,
+                    'nomor_input': createInputCode
+                }).first()
+
+                if (checkDuplication) {
+                    generateInputCode()
+                } else {
+                    return createInputCode
+                }
+            }
+
+            const inputCode = await generateInputCode()
+
+            const formData = {
+                ...defaultFormData,
+                nomor_input: inputCode
+            }
+
+            const inserting = await db('inventaris_input').insert(formData)
+
+            if (!inserting) {
+                throw new sendError({
+                    status: 500,
+                    code: 'ERR_INSERT_DATA',
+                    message: 'Error when inserting data'
+                })
+            }
+
+            await logger('add_item','Berhasil membuat data input', 'cucu.ruhiyatna3@gmail.com', JSON.stringify(formData))
+
+            return res.json({
+                message:'Data saved',
+                data: {
+                    code: getData.nomor,
+                    inputCode: inputCode
+                },
+                responseInsert:inserting
+            })
         }
 
+    } catch (error) {
+        next(error)
+    }
+}
+
+// update data input berdasarkan id input
+const putInputById = async(req,res,next) => {
+    const { quantity, storedAt, user,  ...data } = req.body
+
+    try {
+        const getInputData = await db('inventaris_input').where('id', req.params.id).first()
+
+        if (!getInputData) {
+            throw new sendError({
+                status:400,
+                code: 'INPUT_NOT_FOUND',
+                message: 'Input data not found'
+            })
+        }
+
+        const getItemData = await db('inventaris_barang').where('nomor',getInputData.nomor).first()
+
+        if (!getItemData) {
+            throw new sendError({
+                status:400,
+                code: 'ITEM_NOT_FOUND',
+                message: 'Item data not found'
+            })
+        }
+
+        const getStoredAt = await db('inventaris_gudang').select('nama').where('nama', storedAt).first()
+
+        if (!getStoredAt) {
+            throw new sendError({
+                status:400,
+                code: 'WAREHOUSE_NOT_FOUND',
+                message: 'Warehouse data not found'
+            })
+        }
+
+        const getUser = await db('dbusers').select('id').where('email', user).first()
+
+        if (!getUser) {
+            throw new sendError({
+                status:400,
+                code: 'USER_NOT_FOUND',
+                message: 'User data not found'
+            })
+        }
+
+        if (getItemData.returnable === 'Y' && req.body.quantity != 1) {
+            throw new sendError({
+                status:400,
+                code: 'RETURNABLE_QUANTITY_INVALID',
+                message: 'Quantity data for Input data from Item data with Returnable status is \'true\' must be valued by 1'
+            })
+        }
+
+        console.log('data',data)
+
+        const dataToUpdate = {
+            kuantitas: quantity,
+            tempat_disimpan: storedAt,
+            pengguna: user,
+            deskripsi: data.description
+        }
+
+        if (getItemData.returnable === 'Y') {
+            dataToUpdate.kuantitas = 1
+        } else {
+            const getOutput = await db('inventaris_output')
+                .sum({ count: 'kuantitas' })
+                .where('nomor_input', getInputData.nomor_input)
+                .first()
+
+            const getAudit = await db('inventaris_pemeriksaan')
+                .sum({
+                    good: 'kondisi_bagus',
+                    lightBroken: 'kondisi_rusak_ringan',
+                    heavyBroken: 'kondisi_rusak_berat',
+                    lost: 'kondisi_hilang',
+                })
+                .where('nomor_input', getInputData.nomor_input)
+                .first()
+            
+            if (!getOutput || !getAudit) {
+                throw new sendError({
+                    status:500,
+                    code: 'ERR_GET_OTHER_DATA',
+                    message: 'Error when getting other required data'
+                })
+            }
+
+            // count data from output and audit table
+            const sumAvailableQuantity = getOutput.count + getAudit.good + getAudit.lightBroken + getAudit.heavyBroken + getAudit.lost
+
+            if (quantity < sumAvailableQuantity) {
+                throw new sendError({
+                    status:400,
+                    code: 'QUANTITY_UNDER_MINIMUM',
+                    message: `Quantity data under minimum, ${sumAvailableQuantity} or more required`
+                })
+            }
+        }
+
+        const updating = await db('inventaris_input').update(dataToUpdate).where('id', req.params.id)
+        
+        if (updating) {
+            await logger('update_input','Berhasil memperbarui data input', user, JSON.stringify(dataToUpdate))
+            return res.json({
+                message:'Data updated'
+            })
+        } else {
+            await logger('update_input','gagal memperbarui data input', user, JSON.stringify(dataToUpdate))
+            throw new sendError({
+                message:'Error when updating data',
+                code: 'ERR_UPDATING_DATA'
+            })
+        }
     } catch (error) {
         next(error)
     }
@@ -444,6 +658,7 @@ const getOutputByIdBarang = async(req,res,next) => {
         }
 
         const getData = await db('inventaris_output')
+            .orderBy('tanggal','desc')
             .where({
                 nomor:getItem.nomor
             })
@@ -488,6 +703,7 @@ const getAuditByIdBarang = async(req,res,next) => {
         }
 
         const getData = await db('inventaris_pemeriksaan')
+            .orderBy('tanggal','desc')
             .where({
                 nomor:getItem.nomor
             })
@@ -601,7 +817,7 @@ const getWarehouseById = async(req,res,next) => {
 //cari data barang input
 const getInput = async(req,res,next) => {
     try {
-        const getData = await db('inventaris_input')
+        const getData = await db('inventaris_input').orderBy('tanggal')
             .paginate(pagination(req.page,req.limit));
 
         return res.json(getData)
@@ -633,9 +849,40 @@ const getInputById = async(req,res,next) => {
             message:'Item Not Found'
         })
 
+        const getOutput = await db('inventaris_output')
+            .sum({ count: 'kuantitas' })
+            .where('nomor_input', getData.nomor_input)
+            .first()
+
+        const getAudit = await db('inventaris_pemeriksaan')
+            .sum({
+                good: 'kondisi_bagus',
+                lightBroken: 'kondisi_rusak_ringan',
+                heavyBroken: 'kondisi_rusak_berat',
+                lost: 'kondisi_hilang',
+            })
+            .where('nomor_input', getData.nomor_input)
+            .first()
+
+        const minQuantity = getOutput.count + getAudit.good + getAudit.lightBroken + getAudit.heavyBroken + getAudit.lost
+
         return res.json({
             itemData: dataMapping.item(getItem),
-            data:dataMapping.input(getData)
+            data:dataMapping.input(getData),
+            detail: {
+                count: {
+                    output: getOutput.count ?? 0,
+                    audit: {
+                        good: getAudit.good ?? 0,
+                        lightBroken: getAudit.lightBroken ?? 0,
+                        heavyBroken: getAudit.heavyBroken ?? 0,
+                        lost: getAudit.lost ?? 0,
+                    },
+                },
+                quantity:{
+                    min: minQuantity > 0 ? minQuantity : 1
+                }
+            }
         })
 
     } catch (error) {
@@ -681,16 +928,18 @@ const getOutputById = async(req,res,next) => {
 
 module.exports = {
     inventarisIndex,
+    loginAuth,
     getAllBarang,
     getBarangById,
     putBarangById,
-    loginAuth,
+    postBarang,
     getCategory,
     getCategoryById,
     getInput,
     getInputById,
     getInputByIdBarang,
     postInputByIdBarang,
+    putInputById,
     getOutputByIdBarang,
     getOutput,
     getOutputById,
@@ -698,6 +947,5 @@ module.exports = {
     getWarehouse,
     getWarehouseById,
     getDivisionById,
-    getAuditByIdBarang,
-    postBarang
+    getAuditByIdBarang
 }

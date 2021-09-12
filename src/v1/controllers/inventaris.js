@@ -80,6 +80,11 @@ router
 router
 	.route('/input/:id')
 	.get(checkPageAndLimit,inventaris.getInputById)
+	.put(
+		validatorRules.input(),
+		validationHandler,
+		inventaris.putInputById
+	)
 
 // Data output barang
 router
@@ -91,7 +96,6 @@ router
 	.get(checkPageAndLimit,inventaris.getOutputById)
 
 // Utils
-
 router
 	.use(utils)
 

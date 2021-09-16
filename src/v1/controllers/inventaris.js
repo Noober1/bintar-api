@@ -90,10 +90,12 @@ router
 router
 	.route('/output')
 	.get(checkPageAndLimit,inventaris.getOutput)
-
 router
 	.route('/output/:id')
 	.get(checkPageAndLimit,inventaris.getOutputById)
+router
+	.route('/input/:id/output')
+	.get(checkPageAndLimit,inventaris.getOutputByInputId)
 
 // Utils
 router

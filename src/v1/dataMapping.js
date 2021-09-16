@@ -57,7 +57,7 @@ module.exports = {
         description:item.deskripsi,
         dateCreated:item.tanggal
     }),
-    output: item => ({
+    audit: item => ({
         transactionType:'audit',
         id:item.id,
         itemCode:item.nomor,

@@ -902,7 +902,7 @@ const getOutput = async(req,res,next) => {
     }
 }
 
-//cari inventaris barang berdasarkan id
+//cari inventaris output berdasarkan id
 const getOutputById = async(req,res,next) => {
     try {
         if (typeof req.params.id === 'undefined') {
@@ -926,6 +926,36 @@ const getOutputById = async(req,res,next) => {
     }
 }
 
+// cari inventaris output berdasarkan id input
+const getOutputByInputId = async(req,res,next) => {
+    try {
+
+        const getInputData = await db('inventaris_input')
+            .where('id', req.params.id)
+            .first()
+
+        if (!getInputData) {
+            throw new sendError({
+                status:400,
+                code: 'INPUT_DATA_NOT_FOUND',
+                message:'Input data with given id was not found'
+            })
+        }
+
+        const getData = await db('inventaris_output')
+            .where({
+                nomor_input: getInputData.nomor_input
+            })
+            .paginate(pagination(req.page,req.limit));
+
+        getData.data = getData.data.map(dataMapping.output)
+
+        return res.json(getData)
+    } catch (error) {
+        next(error)
+    }
+}
+
 module.exports = {
     inventarisIndex,
     loginAuth,
@@ -943,6 +973,7 @@ module.exports = {
     getOutputByIdBarang,
     getOutput,
     getOutputById,
+    getOutputByInputId,
     getDivision,
     getWarehouse,
     getWarehouseById,

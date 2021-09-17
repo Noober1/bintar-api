@@ -35,6 +35,20 @@ module.exports = {
         name:item.nama,
         description:item.deskripsi
     }),
+    staff: item => ({
+        id:item.id,
+        email:item.email,
+        firstName:item.nama_depan,
+        lastName:item.nama_belakang,
+        fullName:item.nama_depan + ' ' + item.nama_belakang,
+        position:item.posisi,
+        isTeacher:item.isPengajar,
+        NIK:item.nik,
+        sex:item.jenis_kelamin,
+        placeOfBirth:item.tempat_lahir,
+        birthDate:item.tanggal_lahir,
+        bioMother:item.ibu_kandung
+    }),
     input: item => ({
         transactionType:'input',
         id:item.id,

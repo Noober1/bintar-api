@@ -7,6 +7,7 @@ const dataMapping = require('../../dataMapping');
 const getDataFromDb = require('../../utils/getDataFromDb');
 const { sendError, randomString } = require('../../utils');
 const { logger } = require('../../../../lib/logger');
+const transactionCalculator = require('./transactionCalculator')
 
 // basic data inventaris
 const inventarisIndex = async(req,res,next) => {
@@ -113,56 +114,11 @@ const getBarangById = async(req,res,next) => {
             })
         }
 
-        const getInput = await db('inventaris_input')
-            .sum({ count: 'kuantitas' })
-            .where('nomor', getData.nomor)
-            .first()
-        
-        const getOutput = await db('inventaris_output')
-            .sum({ count: 'kuantitas' })
-            .where('nomor', getData.nomor)
-            .first()
-
-        const getAudit = await db('inventaris_pemeriksaan')
-            .sum({
-                good: 'kondisi_bagus',
-                lightBroken: 'kondisi_rusak_ringan',
-                heavyBroken: 'kondisi_rusak_berat',
-                lost: 'kondisi_hilang'
-            })
-            .where('nomor', getData.nomor)
-            .first()
-
-        const getReturn = await db('inventaris_return')
-            .sum({
-                good: 'kondisi_bagus',
-                lightBroken: 'kondisi_rusak_ringan',
-                heavyBroken: 'kondisi_rusak_berat',
-                lost: 'kondisi_hilang'
-            })
-            .where('nomor', getData.nomor)
-            .first()
+        const getTransactionCalculator = await transactionCalculator(getData, 'item')
 
         return res.json({
             data: dataMapping.item(getData),
-            detail: {
-                count: {
-                    input: getInput.count ?? 0,
-                    output: getOutput.count ?? 0,
-                    audit: {
-                        good: getAudit.good ?? 0,
-                        lightBroken: getAudit.lightBroken ?? 0,
-                        heavyBroken: getAudit.heavyBroken ?? 0,
-                        lost: getAudit.lost ?? 0,
-                    },
-                    return: {
-                        good: getReturn.good ?? 0,
-                        lightBroken: getReturn.lightBroken ?? 0,
-                        heavyBroken: getReturn.heavyBroken ?? 0,
-                        lost: getReturn.lost ?? 0,
-                    }
-                }
-            }
+            detail: getTransactionCalculator
         })
 
     } catch (error) {
@@ -776,6 +732,16 @@ const getWarehouse = async(req,res,next) => {
     }
 }
 
+// cari semua staff
+const getStaff = async(req,res,next) => {
+    try {
+        const getData = await db('dbstaff')
+        return res.json(getData.map(dataMapping.staff))
+    } catch (error) {
+        next(error)
+    }
+}
+
 // cari divisi berdasarkan id divisi
 const getDivisionById = async(req,res,next) => {
     try {
@@ -833,6 +799,7 @@ const getInputById = async(req,res,next) => {
             throw new Error('Parameter invalid')
         }
 
+        // input data
         const getData = await db('inventaris_input')
             .where('id',req.params.id)
             .first()
@@ -841,6 +808,7 @@ const getInputById = async(req,res,next) => {
             message:'Not Found'
         })
 
+        // cari data barang berdasarkan nomor barang
         const getItem = await db('inventaris_barang')
             .where('nomor', getData.nomor)
             .first()
@@ -849,40 +817,22 @@ const getInputById = async(req,res,next) => {
             message:'Item Not Found'
         })
 
-        const getOutput = await db('inventaris_output')
-            .sum({ count: 'kuantitas' })
-            .where('nomor_input', getData.nomor_input)
-            .first()
+        const getTransactionCalculator = await transactionCalculator(getData)
 
-        const getAudit = await db('inventaris_pemeriksaan')
-            .sum({
-                good: 'kondisi_bagus',
-                lightBroken: 'kondisi_rusak_ringan',
-                heavyBroken: 'kondisi_rusak_berat',
-                lost: 'kondisi_hilang',
+        console.log(getTransactionCalculator)
+
+        if (!getTransactionCalculator) {
+            throw new sendError({
+                status:500,
+                code:'ERR_CALCULATING_TRANSACTION',
+                message: 'Error while calculating transaction data'
             })
-            .where('nomor_input', getData.nomor_input)
-            .first()
-
-        const minQuantity = getOutput.count + getAudit.good + getAudit.lightBroken + getAudit.heavyBroken + getAudit.lost
+        }
 
         return res.json({
             itemData: dataMapping.item(getItem),
             data:dataMapping.input(getData),
-            detail: {
-                count: {
-                    output: getOutput.count ?? 0,
-                    audit: {
-                        good: getAudit.good ?? 0,
-                        lightBroken: getAudit.lightBroken ?? 0,
-                        heavyBroken: getAudit.heavyBroken ?? 0,
-                        lost: getAudit.lost ?? 0,
-                    },
-                },
-                quantity:{
-                    min: minQuantity > 0 ? minQuantity : 1
-                }
-            }
+            detail: getTransactionCalculator
         })
 
     } catch (error) {
@@ -895,6 +845,8 @@ const getOutput = async(req,res,next) => {
     try {
         const getData = await db('inventaris_output')
             .paginate(pagination(req.page,req.limit));
+
+        getData.data = getData.data.map(dataMapping.output)
 
         return res.json(getData)
     } catch (error) {
@@ -976,6 +928,7 @@ module.exports = {
     getOutputByInputId,
     getDivision,
     getWarehouse,
+    getStaff,
     getWarehouseById,
     getDivisionById,
     getAuditByIdBarang

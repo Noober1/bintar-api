@@ -72,6 +72,11 @@ router
 	.route('/warehouse/:id')
 	.get(cache.routeJSON(),inventaris.getWarehouseById)
 
+// Data staff
+router
+	.route('/staff')
+	.get(cache.routeJSON(),inventaris.getStaff)
+
 // Data input barang
 router
 	.route('/input')

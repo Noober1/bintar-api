@@ -101,6 +101,11 @@ router
 router
 	.route('/input/:id/output')
 	.get(checkPageAndLimit,inventaris.getOutputByInputId)
+	.post(
+		validatorRules.output(),
+		validationHandler,
+		inventaris.postOutputByInputId
+	)
 
 // Utils
 router

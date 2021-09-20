@@ -908,6 +908,75 @@ const getOutputByInputId = async(req,res,next) => {
     }
 }
 
+// insert inventaris output berdasarkan id input
+const postOutputByInputId = async(req,res,next) => {
+    try {
+        const { quantity } = req.body
+
+        const getInputData = await db('inventaris_input')
+            .where({
+                id: req.params.id
+            })
+            .first()
+
+        if (!getInputData) {
+            throw new sendError({
+                status:400,
+                code: 'INPUT_DATA_NOT_FOUND',
+                message:'Input data with given id was not found'
+            })
+        }
+
+        const getStaff = await db('dbstaff').where('email', req.body.staff).first()
+        if (!getStaff) {
+            throw new sendError({
+                status:400,
+                code:'STAFF_NOT_FOUND',
+                message: 'Staff with email given not found'
+            })
+        }
+
+        const getUser = await db('dbstaff').where('email', req.body.user).first()
+        if (!getUser) {
+            throw new sendError({
+                status:400,
+                code:'OPERATOR_NOT_FOUND',
+                message: 'User/operator with email given not found'
+            })
+        }
+
+        const calculator = await transactionCalculator(getInputData)
+
+        if (!calculator) {
+            throw new sendError({
+                status:500,
+                code:'ERR_CALCULATING_TRANSACTION',
+                message: 'Error when calculating transaction data'
+            })
+        }
+
+        if (calculator.quantity.availableOutput < 1) {
+            throw new sendError({
+                status:400,
+                code:'ADD_OUTPUT_UNAVAILABLE',
+                message: 'Cannot add output for this input data'
+            })
+        }
+
+        if (quantity > calculator.quantity.availableOutput) {
+            throw new sendError({
+                status:400,
+                code:'DATA_EXCEEDED',
+                message: 'Quantity exceeds available output quantity'
+            })
+        }
+
+        return res.json(calculator)
+    } catch (error) {
+        next(error)
+    }
+}
+
 module.exports = {
     inventarisIndex,
     loginAuth,
@@ -926,6 +995,7 @@ module.exports = {
     getOutput,
     getOutputById,
     getOutputByInputId,
+    postOutputByInputId,
     getDivision,
     getWarehouse,
     getStaff,

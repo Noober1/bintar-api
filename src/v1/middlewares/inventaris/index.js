@@ -168,7 +168,6 @@ const putBarangById = async(req,res,next) => {
 
         if (!updating) {
             throw new sendError({
-                status:400,
                 code:'ERR_UPDATE_DATA',
                 message:'Error updating data'
             })
@@ -526,8 +525,6 @@ const putInputById = async(req,res,next) => {
             })
         }
 
-        console.log('data',data)
-
         const dataToUpdate = {
             kuantitas: quantity,
             tempat_disimpan: storedAt,
@@ -633,6 +630,78 @@ const getOutputByIdBarang = async(req,res,next) => {
         }
 
         return res.json(response)
+    } catch (error) {
+        next(error)
+    }
+}
+
+const putOutputById = async(req,res,next) => {
+    try {
+        
+        const getOutputData = await db('inventaris_output').where('id', req.params.id).first()
+        if (!getOutputData) {
+            throw new sendError({
+                status:404,
+                code: 'OUTPUT_NOT_FOUND',
+                message:'Output data with given id not found'
+            })
+        }
+
+        const getInputData = await db('inventaris_input').where('nomor_input', getOutputData.nomor_input).first()
+        if (!getInputData) {
+            throw new sendError({
+                status:400,
+                code: 'INPUT_NOT_FOUND',
+                message:'Input data not found'
+            })
+        }
+
+        const getTransactionCalculator = await transactionCalculator(getInputData)
+
+        if (!getTransactionCalculator) {
+            throw new sendError({
+                status:500,
+                code:'ERR_CALCULATING_TRANSACTION',
+                message: 'Error while calculating transaction data'
+            })
+        }
+
+        const { quantity } = getTransactionCalculator
+        const availableEditOutput = getOutputData.quantity + quantity.availableOutput
+
+        // jika kuantitas yang diberikan melebihi stok kuantitas yang tersedia
+        if (req.body.quantity > availableEditOutput) {
+            throw new sendError({
+                status:400,
+                code: 'QUANTITY_EXCEEDED',
+                message: 'Quantity exceeds available quantity'
+            })
+        }
+        
+        const dataToUpdate = {
+            kuantitas: req.body.quantity,
+            staff: req.body.staff,
+            pengguna: req.body.user,
+            deskripsi: req.body.description
+        }
+        const updating = await db('inventaris_output')
+            .where('id',req.params.id)
+            .update(dataToUpdate)
+
+        if (!updating) {
+            throw new sendError({
+                code:'ERR_UPDATE_DATA',
+                message:'Error updating data'
+            })
+        }
+
+        await logger('update_output','Berhasil memperbarui data output dengan nomor output ' + getOutputData.outputid, req.body.user ,JSON.stringify(dataToUpdate))
+
+        return res.json({
+            message:'Data saved'
+        })
+
+        return res.json(getTransactionCalculator)
     } catch (error) {
         next(error)
     }
@@ -819,8 +888,6 @@ const getInputById = async(req,res,next) => {
 
         const getTransactionCalculator = await transactionCalculator(getData)
 
-        console.log(getTransactionCalculator)
-
         if (!getTransactionCalculator) {
             throw new sendError({
                 status:500,
@@ -861,17 +928,19 @@ const getOutputById = async(req,res,next) => {
             throw new Error('Parameter invalid')
         }
 
-        const getData = await db('inventaris_input')
+        const getData = await db('inventaris_output')
             .where('id',req.params.id)
             .first()
 
         if (!getData) {
-            return res.status(httpStatus.NOT_FOUND).json({
-                message:'Not Found'
+            throw new sendError({
+                status:404,
+                code:'NOT_FOUND',
+                message: 'Output data with id given not found'
             })
         }
 
-        return res.json(getData)
+        return res.json(dataMapping.output(getData))
 
     } catch (error) {
         next(error)
@@ -898,6 +967,7 @@ const getOutputByInputId = async(req,res,next) => {
             .where({
                 nomor_input: getInputData.nomor_input
             })
+            .orderBy('tanggal','desc')
             .paginate(pagination(req.page,req.limit));
 
         getData.data = getData.data.map(dataMapping.output)
@@ -1028,6 +1098,7 @@ module.exports = {
     getOutputById,
     getOutputByInputId,
     postOutputByInputId,
+    putOutputById,
     getDivision,
     getWarehouse,
     getStaff,

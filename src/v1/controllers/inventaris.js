@@ -98,6 +98,11 @@ router
 router
 	.route('/output/:id')
 	.get(checkPageAndLimit,inventaris.getOutputById)
+	.put(
+		validatorRules.output(),
+		validationHandler,
+		inventaris.putOutputById
+	)
 router
 	.route('/input/:id/output')
 	.get(checkPageAndLimit,inventaris.getOutputByInputId)

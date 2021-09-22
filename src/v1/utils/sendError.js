@@ -1,4 +1,4 @@
-function sendError({status = 500, code = 'UNKNOWN', message = 'No Message', data = null}) {
+function sendError({status = 500, code = 'UNKNOWN', message = 'No Message', data = {}}) {
     const error = new Error(message);
     error.code = code
     error.status = status

@@ -63,6 +63,7 @@ module.exports = {
     output: item => ({
         transactionType:'output',
         id:item.id,
+        outputCode: item.nomor_output,
         code:item.nomor,
         inputCode:item.nomor_input,
         quantity:item.kuantitas,

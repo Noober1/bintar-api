@@ -911,7 +911,24 @@ const getOutputByInputId = async(req,res,next) => {
 // insert inventaris output berdasarkan id input
 const postOutputByInputId = async(req,res,next) => {
     try {
-        const { quantity } = req.body
+        const { quantity, user, staff, description } = req.body
+
+        const generateOutputCode = async() => {
+            try {
+                let generateCode = randomString(10).toUpperCase()
+                let getOutput = await db('inventaris_output').where('nomor_output',generateCode).first()
+                if (getOutput) {
+                    generateOutputCode()
+                } else {
+                    return generateCode
+                }
+            } catch (error) {
+                throw new sendError({
+                    code:'ERR_GENERATE_OUTPUT_CODE',
+                    message: 'Error when generating output code'
+                })
+            }
+        }
 
         const getInputData = await db('inventaris_input')
             .where({
@@ -971,7 +988,22 @@ const postOutputByInputId = async(req,res,next) => {
             })
         }
 
-        return res.json(calculator)
+        const generatedOutputCode = await generateOutputCode()
+
+        const inserting = await db('inventaris_output').insert({
+            nomor_output: generatedOutputCode,
+            nomor: getInputData.nomor,
+            nomor_input: getInputData.nomor_input,
+            kuantitas: quantity,
+            pengguna: user,
+            staff: staff,
+            deskripsi: description ? description : ''
+        })
+
+        return res.json({
+            message: 'OK',
+            data: inserting
+        })
     } catch (error) {
         next(error)
     }

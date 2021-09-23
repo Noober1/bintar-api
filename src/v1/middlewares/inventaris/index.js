@@ -666,6 +666,26 @@ const putOutputById = async(req,res,next) => {
             })
         }
 
+        const getUser = await db('dbusers').select('email').where('email', req.body.user).first()
+        const getStaff = await db('dbusers').select('email').where('email', req.body.staff).first()
+
+        // Jika data user tidak ditemukan
+        if (!getUser) {
+            throw new sendError({
+                status:400,
+                code: 'USER_NOT_FOUND',
+                message: 'User with data given not found'
+            })
+        }
+
+        if (!getStaff) {
+            throw new sendError({
+                status:400,
+                code: 'STAFF_NOT_FOUND',
+                message: 'Staff with data given not found'
+            })
+        }
+
         const { quantity } = getTransactionCalculator
         const availableEditOutput = getOutputData.quantity + quantity.availableOutput
 
@@ -701,7 +721,7 @@ const putOutputById = async(req,res,next) => {
             message:'Data saved'
         })
 
-        return res.json(getTransactionCalculator)
+        // return res.json(getTransactionCalculator)
     } catch (error) {
         next(error)
     }
@@ -940,7 +960,33 @@ const getOutputById = async(req,res,next) => {
             })
         }
 
-        return res.json(dataMapping.output(getData))
+        const countReturnData = await db('inventaris_return')
+            .where('id_output', getData.id)
+            .sum({
+                good: 'kondisi_bagus',
+                lightBroken: 'kondisi_rusak_ringan',
+                heavyBroken: 'kondisi_rusak_berat',
+                lost: 'kondisi_hilang'
+            })
+            .first()
+
+        // untuk menghitung minimal output edit
+        const { good, lightBroken, heavyBroken, lost } = countReturnData
+        const sumMinQuantity = 0 + good + lightBroken + heavyBroken + lost
+
+        return res.json({
+            data: dataMapping.output(getData),
+            detail: {
+                returnData: {
+                    good: good ?? 0,
+                    lightBroken: lightBroken ?? 0,
+                    heavyBroken: heavyBroken ?? 0,
+                    lost: lost ?? 0
+                },
+                minQuantity: sumMinQuantity > 0 ? sumMinQuantity : 1,
+                availableStockFromReturn: 0 + good + lightBroken
+            }
+        })
 
     } catch (error) {
         next(error)

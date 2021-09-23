@@ -333,6 +333,49 @@
                         "description": "OK"
                     }
                 }
+            },
+            "put": {
+                "description": "Mengubah data input berdasarkan id input",
+                "consumes":["application/json","application/x-www-form-urlencoded"],
+                "tags": ["Inventaris - Input"],
+                "parameters": [
+                    {
+                        "in":"path",
+                        "name":"id",
+                        "default": 1,
+                        "minimum": 1,
+                        "required": true,
+                        "type": "number",
+                        "description": "ID Input"
+                    },
+                    {
+                        "in":"body",
+                        "name":"item",
+                        "schema": {
+                            "required": ["quantity","user","storedAt","description"],
+                            "type" : "object",
+                            "properties": {
+                                "quantity":{
+                                    "type":"number"
+                                },
+                                "user":{
+                                    "type":"string"
+                                },
+                                "storedAt":{
+                                    "type":"string"
+                                },
+                                "description":{
+                                    "type":"string"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
             }
         },
         "/inventaris/output": {
@@ -377,6 +420,49 @@
                         "required": true,
                         "type": "number",
                         "description": "ID output"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            },
+            "put": {
+                "description": "Mengubah data output berdasarkan id output",
+                "consumes":["application/json","application/x-www-form-urlencoded"],
+                "tags": ["Inventaris - Output"],
+                "parameters": [
+                    {
+                        "in":"path",
+                        "name":"id",
+                        "default": 1,
+                        "minimum": 1,
+                        "required": true,
+                        "type": "number",
+                        "description": "ID output"
+                    },
+                    {
+                        "in":"body",
+                        "name":"item",
+                        "schema": {
+                            "required": ["quantity","user","staff","description"],
+                            "type" : "object",
+                            "properties": {
+                                "quantity":{
+                                    "type":"number"
+                                },
+                                "user":{
+                                    "type":"string"
+                                },
+                                "staff":{
+                                    "type":"string"
+                                },
+                                "description":{
+                                    "type":"string"
+                                }
+                            }
+                        }
                     }
                 ],
                 "responses": {

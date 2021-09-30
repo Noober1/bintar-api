@@ -101,5 +101,17 @@ module.exports = {
                 .isString().withMessage(msg.isString)
                 .isLength({max:500}).withMessage(msg.isLength(0,500)),
         ]
+    },
+    media: () => {
+        return [
+            body('title')
+                .optional()
+                .isString().withMessage(msg.isString)
+                .isLength({max:100}).withMessage(msg.isLength(0,100)),
+            body('description')
+                .optional()
+                .isString().withMessage(msg.isString)
+                .isLength({max:500}).withMessage(msg.isLength(0,500)),
+        ]
     }
 }

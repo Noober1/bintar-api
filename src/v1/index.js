@@ -2,7 +2,7 @@
 const express = require('express')
 const router = express.Router()
 
-const { inventaris, config } = require('./controllers')
+const { inventaris, config, media } = require('./controllers')
 
 router.get('/', (req,res) => {
 	return res.json({
@@ -15,5 +15,8 @@ router.use('/config', config)
 
 //controller untuk inventaris
 router.use('/inventaris', inventaris)
+
+//controller untuk media
+router.use('/media', media)
 
 module.exports = router

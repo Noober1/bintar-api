@@ -48,7 +48,10 @@ module.exports = function main (options, cb) {
 	const app = express()
 
 	// Common middleware
-	// app.use(/* ... */)
+	app.use((req,res,next) => {
+		req.fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl
+		next()
+	})
 
 	// cors configuration
 	app.use(cors())

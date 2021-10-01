@@ -5,7 +5,7 @@ const cache = require('../../../lib/cache')
 const path = require('path')
 const multer = require('multer');
 const rootDir = require("../../../lib/rootDir");
-const { sendError } = require("../utils");
+const { sendError, checkPageAndLimit } = require("../utils");
 
 // uploader
 const whitelist = [
@@ -49,7 +49,7 @@ router
 
 router
     .route('/image')
-    .get(media.getMediaByImage)
+    .get(checkPageAndLimit, media.getMediaByImage)
 
 router
     .route('/:name')

@@ -3,7 +3,8 @@ const db = require('../../../../lib/db');
 const mediaMapping = require("./mediaMapping");
 const rootDir = require("../../../../lib/rootDir");
 const path = require('path')
-const fs = require('fs')
+const fs = require('fs');
+const pagination = require("../../../../lib/pagination");
 
 const index = (req,res) => {
     return res.json({
@@ -40,11 +41,17 @@ const showMediaByName = async(req,res,next) => {
 
 const getMediaByImage = async(req,res,next) => {
     try {
-        const getData = await db('media').where({ jenis: 'image' })
+        const getData = await db('media')
+            .where({ jenis: 'image' })
+            .orderBy('tanggal_dibuat','desc')
+            .paginate(pagination(req.page,req.limit));
+
         let showUrl = req.fullUrl.split('/')
         showUrl.pop()
 
-        return res.json(getData.map(item => mediaMapping(item, showUrl.join('/') + '/')))
+        getData.data = getData.data.map(item => mediaMapping(item, showUrl.join('/') + '/'))
+
+        return res.json(getData)
     } catch (error) {
         next(error)
     }

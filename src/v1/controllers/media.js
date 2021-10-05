@@ -6,6 +6,7 @@ const path = require('path')
 const multer = require('multer');
 const rootDir = require("../../../lib/rootDir");
 const { sendError, checkPageAndLimit } = require("../utils");
+const fs = require('fs')
 
 // uploader
 const whitelist = [
@@ -29,7 +30,9 @@ const fileFilter = (req, file, cb) => {
 const diskStorage = multer.diskStorage({
     destination: async function (req, file, cb) {
         const getRootDir = await rootDir()
-        cb(null, path.join(getRootDir, "/media/upload"));
+        const getUploadDir = path.join(getRootDir, "/media/upload");
+        if (!fs.existsSync(getUploadDir)) fs.mkdirSync(getUploadDir)
+        cb(null, getUploadDir);
     },
     filename: function (req, file, cb) {
         cb(

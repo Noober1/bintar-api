@@ -16,24 +16,19 @@ const showMediaByName = async(req,res,next) => {
     try {
         const getRootDir = await rootDir()
         const getData = await db('media').where({ nama: req.params.name }).first()
+        const notFoundImage = path.join(getRootDir,'media','image-not-found.jpg')
+        const mediaPath = path.join(
+            getRootDir,
+            'media',
+            'upload'
+        )
 
         if (!getData) {
-            throw new sendError({
-                status:404,
-                code: 'NOT_FOUND',
-                message: 'Media not found'
-            })
+            return res.sendFile(path.join(notFoundImage))
+        } else {
+            const realMediaPath = fs.existsSync(path.join(mediaPath, getData.nama)) ? path.join(mediaPath, getData.nama) : path.join(notFoundImage)
+            return res.sendFile(realMediaPath)
         }
-
-        const mediaPath = path.join(
-    getRootDir,
-    'media',
-    'upload'
-        )
-        const notFoundImage = path.join(getRootDir,'media','image-not-found.jpg')
-        const realMediaPath = fs.existsSync(path.join(mediaPath, getData.nama)) ? path.join(mediaPath, getData.nama) : path.join(notFoundImage)
-
-        return res.sendFile(realMediaPath)
     } catch (error) {
         next(error)
     }

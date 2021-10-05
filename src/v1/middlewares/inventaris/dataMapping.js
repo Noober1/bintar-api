@@ -58,6 +58,7 @@ module.exports = {
         user:item.pengguna,
         description:item.deskripsi,
         storedAt:item.tempat_disimpan,
+        media:item.media,
         dateCreated:item.tanggal
     }),
     output: item => ({

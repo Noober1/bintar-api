@@ -72,6 +72,10 @@ module.exports = {
                 .not().isEmpty().withMessage(msg.isNotEmpty)
                 .isString().withMessage(msg.isString)
                 .isLength({max:50}).withMessage(msg.isLength(1,50)),
+            body('media')
+                .not().isEmpty().withMessage(msg.isNotEmpty)
+                .isString().withMessage(msg.isString)
+                .isLength({max:100}).withMessage(msg.isLength(1,100)),
             body('description')
                     .optional()
                     .isString().withMessage(msg.isString)

@@ -20,6 +20,80 @@
                 }
             }
         },
+        "/media": {
+            "get": {
+                "description": "Media",
+                "tags": ["Media"],
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            },
+            "post": {
+                "description": "Menambah media",
+                "consumes":["multipart/form-data"],
+                "tags": ["Media"],
+                "parameters": [
+                    {
+                        "in":"body",
+                        "name":"media",
+                        "schema": {
+                            "required": ["file","title","description"],
+                            "type" : "object",
+                            "properties": {
+                                "file":{
+                                    "type":"string",
+                                    "format": "binary"
+                                },
+                                "title":{
+                                    "type":"string"
+                                },
+                                "description":{
+                                    "type":"string"
+                                }
+                            }
+
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/media/image": {
+            "get": {
+                "description": "Menampilkan database media gambar",
+                "tags": ["Media"],
+                "parameters": [
+                    {
+                        "in":"path",
+                        "name":"page",
+                        "default": 1,
+                        "minimum": 1,
+                        "type": "number",
+                        "description": "Halaman yang ditampilkan"
+                    },
+                    {
+                        "in":"path",
+                        "name":"limit",
+                        "default":10,
+                        "minimum": 1,
+                        "type": "number",
+                        "description": "Limit data yang ditampilkan"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
         "/": {
             "get": {
                 "description": "Menampilkan statistik inventaris",
@@ -235,7 +309,7 @@
                         "in":"body",
                         "name":"item",
                         "schema": {
-                            "required": ["code","quantity","user","description","storedAt"],
+                            "required": ["code","quantity","user","description","storedAt","media"],
                             "type" : "object",
                             "properties": {
                                 "quantity":{
@@ -249,6 +323,9 @@
                                     "type":"string"
                                 },
                                 "storedAt":{
+                                    "type":"string"
+                                },
+                                "media":{
                                     "type":"string"
                                 }
                             }
@@ -352,19 +429,23 @@
                         "in":"body",
                         "name":"item",
                         "schema": {
-                            "required": ["quantity","user","storedAt","description"],
+                            "required": ["code","quantity","user","description","storedAt","media"],
                             "type" : "object",
                             "properties": {
                                 "quantity":{
-                                    "type":"number"
+                                    "type":"number",
+                                    "default":1
                                 },
                                 "user":{
+                                    "type":"string"
+                                },
+                                "description":{
                                     "type":"string"
                                 },
                                 "storedAt":{
                                     "type":"string"
                                 },
-                                "description":{
+                                "media":{
                                     "type":"string"
                                 }
                             }

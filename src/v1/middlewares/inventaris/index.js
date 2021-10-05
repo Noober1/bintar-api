@@ -3,7 +3,7 @@ const _ = require('lodash');
 const db = require('../../../../lib/db');
 const pagination = require('../../../../lib/pagination');
 const Crypto = require('crypto');
-const dataMapping = require('../../dataMapping');
+const dataMapping = require('./dataMapping');
 const getDataFromDb = require('../../utils/getDataFromDb');
 const { sendError, randomString } = require('../../utils');
 const { logger } = require('../../../../lib/logger');
@@ -345,6 +345,17 @@ const postInputByIdBarang = async(req,res,next) => {
                 message:'Warehouse not found'
             })
         }
+
+        // cari data gudang di database
+        const getMedia = await db('media').select('nama').where('nama', req.body.media).first()
+
+        if(!getMedia) {
+            throw new sendError({
+                status:400,
+                code:'MEDIA_NOT_FOUND',
+                message:'Media with name given not found'
+            })
+        }
         
         const defaultFormData = {
             nomor: getData.nomor,
@@ -353,6 +364,7 @@ const postInputByIdBarang = async(req,res,next) => {
             pengguna: req.body.user,
             deskripsi: req.body.description,
             tempat_disimpan: req.body.storedAt,
+            media: req.body.media,
             tanggal: new Date()
         }
 
@@ -413,7 +425,7 @@ const postInputByIdBarang = async(req,res,next) => {
                 })
             }
 
-            await logger('insert_input','Berhasil membuat data input', 'cucu.ruhiyatna3@gmail.com', JSON.stringify(formData))
+            await logger('insert_input','Berhasil membuat data input', req.body.user || 'cucu.ruhiyatna3@gmail.com', JSON.stringify(formData))
             
             return res.json({
                 message:'Data saved',
@@ -455,7 +467,7 @@ const postInputByIdBarang = async(req,res,next) => {
                 })
             }
 
-            await logger('add_item','Berhasil membuat data input', 'cucu.ruhiyatna3@gmail.com', JSON.stringify(formData))
+            await logger('add_item','Berhasil membuat data input', req.body.user || 'cucu.ruhiyatna3@gmail.com', JSON.stringify(formData))
 
             return res.json({
                 message:'Data saved',
@@ -474,7 +486,7 @@ const postInputByIdBarang = async(req,res,next) => {
 
 // update data input berdasarkan id input
 const putInputById = async(req,res,next) => {
-    const { quantity, storedAt, user,  ...data } = req.body
+    const { quantity, storedAt, user, media, ...data } = req.body
 
     try {
         const getInputData = await db('inventaris_input').where('id', req.params.id).first()
@@ -525,10 +537,22 @@ const putInputById = async(req,res,next) => {
             })
         }
 
+        // cari data gudang di database
+        const getMedia = await db('media').select('nama').where('nama', media).first()
+
+        if(!getMedia) {
+            throw new sendError({
+                status:400,
+                code:'MEDIA_NOT_FOUND',
+                message:'Media with name given not found'
+            })
+        }
+
         const dataToUpdate = {
             kuantitas: quantity,
             tempat_disimpan: storedAt,
             pengguna: user,
+            media: media,
             deskripsi: data.description
         }
 

@@ -25,7 +25,7 @@ router
 
 router
 	.route('/item/:id')
-	.get(cache.routeJSON(),inventaris.getBarangById)
+	.get(inventaris.getBarangById)
 	.put(inventaris.putBarangById)
 
 router

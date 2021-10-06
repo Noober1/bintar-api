@@ -48,7 +48,7 @@ router
 // Data kategori barang
 router
 	.route('/category')
-	.get(cache.routeJSON(),inventaris.getCategory)
+	.get(checkPageAndLimit,cache.routeJSON(),inventaris.getCategory)
 
 router
 	.route('/category/:id')
@@ -57,7 +57,7 @@ router
 // Data divisi
 router
 	.route('/division')
-	.get(cache.routeJSON(),inventaris.getDivision)
+	.get(cache.routeJSON(),checkPageAndLimit,inventaris.getDivision)
 
 router
 	.route('/division/:id')
@@ -66,7 +66,7 @@ router
 // Data gudang penyimpanan
 router
 	.route('/warehouse')
-	.get(cache.routeJSON(),inventaris.getWarehouse)
+	.get(checkPageAndLimit,cache.routeJSON(),inventaris.getWarehouse)
 
 router
 	.route('/warehouse/:id')

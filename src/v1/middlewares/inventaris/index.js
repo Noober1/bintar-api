@@ -24,7 +24,11 @@ const inventarisIndex = async(req,res,next) => {
         return res.json({
             isActive:(inventaris_status === 'aktif'),
             maintenanceMode:false,
-            itemNumberPatter:inventaris_nomor_regex,
+            itemNumberPattern:inventaris_nomor_regex,
+            itemNumberTemplates: [
+                {name: '[CODE]', description: 'Kode barang'},
+                {name: '[YEAR]', description: 'Tahun pembuatan data'}
+            ],
             counter:{
                 item:getItem.cid,
                 category:getCategory.cid,
@@ -799,8 +803,9 @@ const getAuditByIdBarang = async(req,res,next) => {
 // cari semua kategori
 const getCategory = async(req,res,next) => {
     try {
-        const getData = await db('inventaris_kategori')
-        return res.json(getData.map(dataMapping.category))
+        const getData = await db('inventaris_kategori').paginate(pagination(req.page,req.limit))
+        getData.data = getData.data.map(dataMapping.category)
+        return res.json(getData)
     } catch (error) {
         next(error)
     }
@@ -828,8 +833,9 @@ const getCategoryById = async(req,res,next) => {
 // cari semua divisi
 const getDivision = async(req,res,next) => {
     try {
-        const getData = await db('inventaris_divisi')
-        return res.json(getData.map(dataMapping.division))
+        const getData = await db('inventaris_divisi').paginate(pagination(req.page,req.limit))
+        getData.data = getData.data.map(dataMapping.division)
+        return res.json(getData)
     } catch (error) {
         next(error)
     }
@@ -838,8 +844,9 @@ const getDivision = async(req,res,next) => {
 // cari semua gudang penyimpanan
 const getWarehouse = async(req,res,next) => {
     try {
-        const getData = await db('inventaris_gudang')
-        return res.json(getData.map(dataMapping.warehouse))
+        const getData = await db('inventaris_gudang').paginate(pagination(req.page,req.limit))
+        getData.data = getData.data.map(dataMapping.warehouse)
+        return res.json(getData)
     } catch (error) {
         next(error)
     }

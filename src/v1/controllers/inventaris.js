@@ -97,7 +97,7 @@ router
 	.get(checkPageAndLimit,inventaris.getOutput)
 router
 	.route('/output/:id')
-	.get(checkPageAndLimit,inventaris.getOutputById)
+	.get(inventaris.getOutputById)
 	.put(
 		validatorRules.output(),
 		validationHandler,
@@ -111,6 +111,13 @@ router
 		validationHandler,
 		inventaris.postOutputByInputId
 	)
+router
+	.route('/output/:id/return')
+	.get(checkPageAndLimit,inventaris.getReturnByOutputId)
+
+router
+	.route('/return/:id')
+	.get(inventaris.getReturnById)
 
 // Utils
 router

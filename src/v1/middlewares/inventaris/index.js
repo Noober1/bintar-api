@@ -253,6 +253,55 @@ const postBarang = async(req,res,next) => {
     }
 }
 
+const getReturnById = async(req,res,next) => {
+    try {
+        const getData = await db('inventaris_return').where({
+            id: req.params.id
+        }).first()
+
+        if (!getData) {
+            throw new sendError({
+                status:404,
+                code: 'NOT_FOUND',
+                message: 'Return data with id given not found'
+            })
+        }
+        return res.json({
+            data: dataMapping.return(getData),
+            detail: {}
+        })
+    } catch (error) {
+        next(error)
+    }
+}
+
+// cari return data berdarsarkan id output
+const getReturnByOutputId = async(req,res,next) => {
+    try {
+        const getData = await db('inventaris_return').where({
+            id_output: req.params.id
+        }).paginate(pagination(req.page,req.limit))
+
+        const getOutputData = await db('inventaris_output').where({
+            id: req.params.id
+        }).first()
+
+        if (!getOutputData) {
+            throw new sendError({
+                error:404,
+                code: 'Not Found',
+                message: 'Output with id given not found'
+            })
+        }
+
+        getData.outputData = dataMapping.output(getOutputData)
+        getData.data = getData.data.map(dataMapping.return)
+        return res.json(getData)
+    } catch (error) {
+        next(error)
+    }
+}
+
 // cari daftar input berdasarkan id barang
 const getInputByIdBarang = async(req,res,next) => {
     try {
@@ -855,8 +904,9 @@ const getWarehouse = async(req,res,next) => {
 // cari semua staff
 const getStaff = async(req,res,next) => {
     try {
-        const getData = await db('dbstaff')
-        return res.json(getData.map(dataMapping.staff))
+        const getData = await db('dbstaff').paginate(pagination(req.page,req.limit))
+        getData.data = getData.data.map(dataMapping.staff)
+        return res.json(getData)
     } catch (error) {
         next(error)
     }
@@ -991,6 +1041,18 @@ const getOutputById = async(req,res,next) => {
             })
         }
 
+        const getItemData = await db('inventaris_barang').where({
+            nomor: getData.nomor
+        }).first()
+
+        if (!getItemData) {
+            throw new sendError({
+                status:404,
+                code:'ITEM_NOT_FOUND',
+                message: 'Item data with code given not found'
+            })
+        }
+
         const countReturnData = await db('inventaris_return')
             .where('id_output', getData.id)
             .sum({
@@ -1007,6 +1069,7 @@ const getOutputById = async(req,res,next) => {
 
         return res.json({
             data: dataMapping.output(getData),
+            itemData: dataMapping.item(getItemData),
             detail: {
                 returnData: {
                     good: good ?? 0,
@@ -1165,6 +1228,8 @@ module.exports = {
     postBarang,
     getCategory,
     getCategoryById,
+    getReturnByOutputId,
+    getReturnById,
     getInput,
     getInputById,
     getInputByIdBarang,

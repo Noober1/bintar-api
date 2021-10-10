@@ -86,6 +86,20 @@ module.exports = {
         description:item.deskripsi,
         dateCreated:item.tanggal
     }),
+    return: item => ({
+        transactionType: 'return',
+        id: item.id,
+        itemCode: item.nomor,
+        inputCode: item.nomor_input,
+        outputId: item.id_output,
+        user: item.pengguna,
+        itemGood:item.kondisi_bagus,
+        itemLightBroken:item.kondisi_rusak_ringan,
+        itemHeavyBroken:item.kondisi_rusak_berat,
+        itemLost:item.kondisi_hilang,
+        description:item.deskripsi,
+        dateCreated:item.tanggal
+    }),
     log: item => ({
         id: item.id,
         date: item.date,

@@ -116,6 +116,14 @@ router
 	.get(checkPageAndLimit,inventaris.getReturnByOutputId)
 
 router
+	.route('/return/')
+	.post(
+		validatorRules.return(),
+		validationHandler,
+		inventaris.postReturn
+	)
+
+router
 	.route('/return/:id')
 	.get(inventaris.getReturnById)
 

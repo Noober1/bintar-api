@@ -275,6 +275,123 @@ const getReturnById = async(req,res,next) => {
     }
 }
 
+const postReturn = async(req,res,next) => {
+    try {
+        let sumReturnQuantityFromDatabase = 0;
+        const getItemCode = await db('inventaris_barang').where({
+            nomor: req.body.code
+        }).first()
+        if (!getItemCode) {
+            throw new sendError({
+                status:400,
+                code:'ITEM_NOT_FOUND',
+                message: 'Item with code given not found'
+            })
+        }
+        
+        const getOutput = await db('inventaris_output').where({
+            nomor_output: req.body.outputCode,
+            nomor: getItemCode.nomor
+        }).first()
+        if (!getOutput) {
+            throw new sendError({
+                status:400,
+                code:'OUTPUT_NOT_FOUND',
+                message: 'Output data with id given not found'
+            })
+        }
+
+        const getUser = await db('dbusers').where({
+            email: req.body.user
+        }).first()
+        if (!getUser) {
+            throw new sendError({
+                status:400,
+                code:'USER_NOT_FOUND',
+                message: 'User with email given not found'
+            })
+        }
+
+        const getStaff = await db('dbstaff').where({
+            email: req.body.staff
+        }).first()
+        if (!getStaff) {
+            throw new sendError({
+                status:400,
+                code:'STAFF_NOT_FOUND',
+                message: 'Staff with email given not found'
+            })
+        }
+
+        const getReturnByOutputId = await db('inventaris_return')
+            .where({
+                id_output: getOutput.id
+            })
+            .sum({
+                itemGood: 'kondisi_bagus',
+                itemLightBroken: 'kondisi_rusak_ringan',
+                itemHeavyBroken: 'kondisi_rusak_berat',
+                itemLost: 'kondisi_hilang'
+            })
+            .first()
+
+        if (getReturnByOutputId) {
+            let { itemGood, itemLightBroken, itemHeavyBroken, itemLost } = getReturnByOutputId
+            sumReturnQuantityFromDatabase += itemGood + itemLightBroken + itemHeavyBroken + itemLost
+        }
+
+        const sumQuantityFromBody = parseInt(req.body.itemGood) + parseInt(req.body.itemLightBroken) + parseInt(req.body.itemHeavyBroken) + parseInt(req.body.itemLost)
+        if (sumQuantityFromBody > getOutput.kuantitas) {
+            console.log('triggered sumQuantityFromBody',sumQuantityFromBody, getOutput.kuantitas)
+            throw new sendError({
+                status:400,
+                code: 'QUANTITY_DATA_OVERLOAD',
+                message: 'Accumulation from item good, item light broken, item heavy broken and item lost exceeding output quantity'
+            })
+        } else if(sumQuantityFromBody < 1) {
+            console.log('triggered sumQuantityFromBody',sumQuantityFromBody)
+            throw new sendError({
+                status:400,
+                code: 'QUANTITY_DATA_ZERO',
+                message: 'Accumulation from item good, item light broken, item heavy broken and item lost cannot be zero'
+            })
+        }
+
+        if ((getOutput.kuantitas - sumReturnQuantityFromDatabase) < 1) {
+            throw new sendError({
+                status:400,
+                code: 'RETURN_QUOTA_EXCEEDED',
+                message: 'Cannot add return data because all item have returned'
+            })
+        }
+
+        const inserting = await db('inventaris_return').insert({
+            nomor: req.body.code,
+            nomor_input: getOutput.nomor_input,
+            id_output: getOutput.id,
+            pengguna: req.body.user,
+            staff: req.body.staff,
+            kondisi_bagus: req.body.itemGood,
+            kondisi_rusak_ringan: req.body.itemLightBroken,
+            kondisi_rusak_berat: req.body.itemHeavyBroken,
+            kondisi_hilang: req.body.itemLost,
+            deskripsi: req.body.description
+        })
+        
+        if (inserting) {
+            return res.json({
+                success:true,
+                data: inserting
+            })
+        }
+        // return res.json({
+        //     getItemCode,getOutputByOutputCode,sumReturnQuantityFromDatabase
+        // })
+    } catch (error) {
+        next(error)
+    }
+}
+
 // cari return data berdarsarkan id output
 const getReturnByOutputId = async(req,res,next) => {
     try {
@@ -1078,7 +1195,8 @@ const getOutputById = async(req,res,next) => {
                     lost: lost ?? 0
                 },
                 minQuantity: sumMinQuantity > 0 ? sumMinQuantity : 1,
-                availableStockFromReturn: 0 + good + lightBroken
+                availableStockFromReturn: 0 + good + lightBroken,
+                availableAddReturn: getData.kuantitas - sumMinQuantity,
             }
         })
 
@@ -1230,6 +1348,7 @@ module.exports = {
     getCategoryById,
     getReturnByOutputId,
     getReturnById,
+    postReturn,
     getInput,
     getInputById,
     getInputByIdBarang,

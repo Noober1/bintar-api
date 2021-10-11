@@ -88,10 +88,10 @@ module.exports = {
     },
     output: () => {
         return [
-            body('quantity')
+            body('code')
                 .not().isEmpty().withMessage(msg.isNotEmpty)
-                .isInt({min: 1}).withMessage(msg.isInt(1))
-                .isLength({max:5}).withMessage(msg.isLength(1,5)),
+                .isString().withMessage(msg.isString)
+                .isLength({max:50}).withMessage(msg.isLength(1,50)),
             body('user')
                 .not().isEmpty().withMessage(msg.isNotEmpty)
                 .isString().withMessage(msg.isString)
@@ -104,6 +104,46 @@ module.exports = {
                 .optional()
                 .isString().withMessage(msg.isString)
                 .isLength({max:500}).withMessage(msg.isLength(0,500)),
+        ]
+    },
+    return: () => {
+        return [
+            body('code')
+                .not().isEmpty().withMessage(msg.isNotEmpty)
+                .isString().withMessage(msg.isString)
+                .isLength({max:50}).withMessage(msg.isLength(1,50)),
+            body('outputCode')
+                .not().isEmpty().withMessage(msg.isNotEmpty)
+                .isString().withMessage(msg.isString)
+                .isLength({max:30}).withMessage(msg.isLength(1,30)),
+            body('user')
+                .not().isEmpty().withMessage(msg.isNotEmpty)
+                .isString().withMessage(msg.isString)
+                .isLength({max:50}).withMessage(msg.isLength(1,50)),
+            body('staff')
+                .not().isEmpty().withMessage(msg.isNotEmpty)
+                .isString().withMessage(msg.isString)
+                .isLength({max:50}).withMessage(msg.isLength(1,50)),
+            body('description')
+                .optional()
+                .isString().withMessage(msg.isString)
+                .isLength({max:500}).withMessage(msg.isLength(0,500)),
+            body('itemGood')
+                .not().isEmpty().withMessage(msg.isNotEmpty)
+                .isInt({min:0}).withMessage(msg.isInt(0))
+                .isLength({max:5}).withMessage(msg.isLength(1,5)),
+            body('itemLightBroken')
+                .not().isEmpty().withMessage(msg.isNotEmpty)
+                .isInt({min:0}).withMessage(msg.isInt(0))
+                .isLength({max:5}).withMessage(msg.isLength(1,5)),
+            body('itemHeavyBroken')
+                .not().isEmpty().withMessage(msg.isNotEmpty)
+                .isInt({min:0}).withMessage(msg.isInt(0))
+                .isLength({max:5}).withMessage(msg.isLength(1,5)),
+            body('itemLost')
+                .not().isEmpty().withMessage(msg.isNotEmpty)
+                .isInt({min:0}).withMessage(msg.isInt(0))
+                .isLength({max:5}).withMessage(msg.isLength(1,5))
         ]
     },
     media: () => {

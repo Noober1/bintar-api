@@ -1,11 +1,15 @@
-const inventaris = require('./inventaris')
 const config = require('./config')
+const inventaris = require('./inventaris')
+const administrasi = require('./administrasi')
 const utils = require('./inventaris/utils')
 const media = require('./media')
+const user = require('./user')
 
 module.exports = {
-    inventaris,
     config,
+    inventaris,
+    administrasi,
     utils,
-    media
+    media,
+    user
 }

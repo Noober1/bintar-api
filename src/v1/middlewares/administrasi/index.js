@@ -1,0 +1,18 @@
+const { sendError } = require("../../utils")
+const db = require('../../../../lib/db');
+const rootDir = require("../../../../lib/rootDir");
+const path = require('path')
+const pagination = require("../../../../lib/pagination")
+
+const getStudent = async(req,res,next) => {
+    try {
+        const getData = await db('administrasi_mahasiswa')
+        return res.json(getData)
+    } catch (error) {
+        next(error)
+    }
+}
+
+module.exports = {
+    getStudent
+}

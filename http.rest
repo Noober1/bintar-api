@@ -7,10 +7,14 @@ Content-Type: application/json
 
 {
     "username":"yufechan701@gmail.com",
-    "password":"bebasaja"
+    "password":"bebasaja",
+    "app": "inventaris"
 }
 
 ###
 
 GET http://localhost:8080/v1/user
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InZ1bG5lcmFibGV2MSIsImlhdCI6MTYzNTI2MjMxMH0.2HsdNdOty_9emnrQkuUANJX6cMsCgGUpirMChr0kFw4
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Inl1ZmVjaGFuNzAxQGdtYWlsLmNvbSIsImxldmVsIjoiZ3VydSIsInBlcm1pc3Npb24iOlsicG9rb2tfanVydXNhbiIsInBva29rX3Nla29sYWgiLCJQUERCX3BlbmRhZnRhcmFuIiwiUFBEQl9hZG1pbmlzdHJhc2kiLCJpbnZlbnRhcmlzIl0sImlhdCI6MTYzNTQ0MTIxNH0.49WN-acCiGPAPfQvFEDhioRSZIcqB4o8_isPZXFf2oc
+###
+GET http://localhost:8080/v1/user/profile
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Inl1ZmVjaGFuNzAxQGdtYWlsLmNvbSIsImxldmVsIjoiZ3VydSIsInBlcm1pc3Npb24iOlsicG9rb2tfanVydXNhbiIsInBva29rX3Nla29sYWgiLCJQUERCX3BlbmRhZnRhcmFuIiwiUFBEQl9hZG1pbmlzdHJhc2kiLCJpbnZlbnRhcmlzIl0sImlhdCI6MTYzNTQ0MTIxNH0.49WN-acCiGPAPfQvFEDhioRSZIcqB4o8_isPZXFf2oc

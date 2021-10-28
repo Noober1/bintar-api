@@ -3,6 +3,7 @@ const router = express.Router()
 const cache = require('../../../lib/cache')
 
 const { validationHandler,checkPageAndLimit, validatorRules } = require('../utils');
+const { route } = require('./auth');
 
 router
     .route('/')
@@ -15,5 +16,5 @@ router
             next(error)
         }
     })
-
+    
 module.exports = router

@@ -17,7 +17,7 @@ const getIndex = (req,res,next) => {
 
 const postLogin = async(req,res,next) => {
     try {
-        const { username, password } = req.body
+        const { username, password, app } = req.body
 
         if (!username || !password) {
             throw new sendError({
@@ -41,6 +41,15 @@ const postLogin = async(req,res,next) => {
                 status:httpStatus.UNAUTHORIZED,
                 message: 'Username or password incorrect',
                 code: 'WRONG_AUTH'
+            })
+        }
+
+        const userPermission = JSON.parse(getUser.hak_akses)
+        if (getUser.level != 'superuser' && !userPermission.includes(app)) {
+            throw new sendError({
+                status:httpStatus.FORBIDDEN,
+                message:'This acount have no permission for this application',
+                code: 'NO_PERMISSION'
             })
         }
 

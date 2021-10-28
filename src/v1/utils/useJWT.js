@@ -1,6 +1,11 @@
 const { sendError } = require(".")
 const jwt = require('jsonwebtoken')
-
+/**
+ * AuthToken = verify JWT and if valid store payload to req.auth
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ */
 const authToken = (req,res,next) => {
     try {
         const authHeader = req.headers['authorization']

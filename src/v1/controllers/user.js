@@ -1,6 +1,6 @@
 const express = require('express');
 const { user } = require('../middlewares');
-const { authToken } = require('../utils/useJWT');
+const { withAuthToken } = require('../utils/useJWT');
 const db = require('../../../lib/db');
 const { sendError } = require('../utils');
 const httpStatus = require('http-status');
@@ -10,7 +10,7 @@ const { validationHandler, checkPageAndLimit, validatorRules } = require('../uti
 router
     .route('/')
     .get(
-        authToken,
+        withAuthToken,
         (req,res,next) =>{
             try {
                 return res.json({
@@ -25,7 +25,7 @@ router
 router
     .route('/profile')
     .get(
-        authToken,
+        withAuthToken,
         async(req,res,next) =>{
             try {
                 const getData = await db('dbusers')

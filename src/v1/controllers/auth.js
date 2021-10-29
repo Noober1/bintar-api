@@ -1,15 +1,19 @@
 const express = require('express');
 const router = express.Router()
-const { getIndex, postLogin } = require('../middlewares/auth')
-
-router
-    .route('/')
-    .get(getIndex)
+const auth = require('../middlewares/auth');
+const { withAuthToken } = require('../utils/useJWT');
 
 router
     .route('/login')
     .post(
-        postLogin
+        auth.postLogin
+    )
+
+router
+    .route('/profile')
+    .get(
+        withAuthToken,
+        auth.getProfile
     )
 
 module.exports = router

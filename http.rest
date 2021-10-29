@@ -2,14 +2,24 @@ GET http://localhost:8080/v1/auth
 ###
 POST http://localhost:8080/v1/auth/login
 Content-Type: application/json
+
 {
-    "username":"yufechan701@gmail.com",
-    "password":"bebasaja",
+    "username":"cucu.ruhiyatna3@gmail.com",
+    "password":"kekaishi123",
     "app": "inventaris"
 }
+
+# {
+#     "username":"dede.munawar@gmail.com",
+#     "password":"kekaishi123",
+#     "app": "inventaris"
+# }
 ###
 GET http://localhost:8080/v1/user
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Inl1ZmVjaGFuNzAxQGdtYWlsLmNvbSIsImxldmVsIjoiZ3VydSIsInBlcm1pc3Npb24iOlsicG9rb2tfanVydXNhbiIsInBva29rX3Nla29sYWgiLCJQUERCX3BlbmRhZnRhcmFuIiwiUFBEQl9hZG1pbmlzdHJhc2kiLCJpbnZlbnRhcmlzIl0sImlhdCI6MTYzNTQ0MTIxNH0.49WN-acCiGPAPfQvFEDhioRSZIcqB4o8_isPZXFf2oc
 ###
 GET http://localhost:8080/v1/user/profile
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Inl1ZmVjaGFuNzAxQGdtYWlsLmNvbSIsImxldmVsIjoiZ3VydSIsInBlcm1pc3Npb24iOlsicG9rb2tfanVydXNhbiIsInBva29rX3Nla29sYWgiLCJQUERCX3BlbmRhZnRhcmFuIiwiUFBEQl9hZG1pbmlzdHJhc2kiLCJpbnZlbnRhcmlzIl0sImlhdCI6MTYzNTQ0MTIxNH0.49WN-acCiGPAPfQvFEDhioRSZIcqB4o8_isPZXFf2oc
+###
+GET http://localhost:8080/v1/auth/profile
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50VHlwZSI6InN0dWRlbnQiLCJlbWFpbCI6ImRlZGUubXVuYXdhckBnbWFpbC5jb20iLCJ0eXBlIjoicmVndWxlciIsImlhdCI6MTYzNTUxNTU5NH0.74VipWVBquYmmr5pZU3AmT1hozukAh11KZztEOj8D68

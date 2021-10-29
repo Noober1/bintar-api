@@ -6,7 +6,7 @@ const jwt = require('jsonwebtoken')
  * @param {*} res 
  * @param {*} next 
  */
-const authToken = (req,res,next) => {
+const withAuthToken = (req,res,next) => {
     try {
         const authHeader = req.headers['authorization']
         const token = authHeader && authHeader.split(' ')[1]
@@ -36,6 +36,6 @@ const authToken = (req,res,next) => {
 }
 
 module.exports = {
-    authToken
+    withAuthToken
 }
 

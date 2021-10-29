@@ -3,6 +3,7 @@ module.exports = {
         id:item.id,
         firstName:item.nama_depan,
         lastName:item.nama_belakang,
+        fullName: (item.nama_depan + ' ' + item.nama_belakang).toLowerCase(),
         email:item.email,
         level:item.level,
         status:item.status_user,

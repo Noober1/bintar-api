@@ -121,8 +121,11 @@ const getProfile = async(req,res,next) => {
 
         const { email, accountType } = req.auth
         const getData = await sqlQueryAccount(accountType, { email })
-        // return res.json(getData)
-        return res.json(accountType === 'admin' ? user(getData) : mahasiswa(getData))
+        const data = accountType === 'admin' ? user(getData) : mahasiswa(getData)
+        return res.json({
+            accountType,
+            ...data,
+        })
     } catch (error) {
         next(error)
     }

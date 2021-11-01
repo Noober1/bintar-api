@@ -4,7 +4,7 @@ const rootDir = require("../../../../lib/rootDir");
 const path = require('path')
 const pagination = require("../../../../lib/pagination")
 
-const getStudent = async(req,res,next) => {
+const getPayment = async(req,res,next) => {
     try {
         const getData = await db('administrasi_mahasiswa')
         return res.json(getData)

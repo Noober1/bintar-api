@@ -18,5 +18,9 @@ router
             next(error)
         }
     })
+
+router
+    .route('/payment')
+    .
     
 module.exports = router

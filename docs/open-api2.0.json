@@ -7,6 +7,14 @@
     "host": "localhost:8080",
     "basePath": "/v1",
     "schemes": ["http"],
+    "securityDefinitions": {
+        "bearer":{
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header",
+            "description": "JWT Token: Bearer [YOUR_TOKEN_HERE]"
+        }
+    },
     "paths": {
         "/config": {
             "get": {
@@ -16,6 +24,103 @@
                 "responses": {
                     "200": {
                         "description": "OK"
+                    }
+                }
+            }
+        },
+        "/auth/login": {
+            "post": {
+                "description": "Login JWT",
+                "tags": ["Auth"],
+                "consumes":["application/json"],
+                "parameters": [
+                    {
+                        "in":"body",
+                        "name":"auth",
+                        "schema": {
+                            "required": ["username","password"],
+                            "type" : "object",
+                            "properties": {
+                                "username":{
+                                    "type":"string"
+                                },
+                                "password":{
+                                    "type":"string"
+                                }
+                            }
+
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "401":{
+                        "description": "Username or password wrong"
+                    },
+                    "400":{
+                        "description": "Wrong form value"
+                    }
+                }
+            }
+        },
+        "/auth/profile":{
+            "get": {
+                "description": "Get user profile by access token",
+                "tags": ["Auth"],
+                "parameters": [],
+                "security": [
+                    {
+                        "bearer":[]
+                    }
+                ],
+                "responses": {
+                    "200":{
+                        "description": "OK"
+                    },
+                    "401":{
+                        "description": "Unauthorized, access token invalid"
+                    }
+                }
+            }
+        },
+        "/user":{
+            "get": {
+                "description": "Get user list",
+                "tags": ["User"],
+                "parameters": [],
+                "security": [
+                    {
+                        "bearer":[]
+                    }
+                ],
+                "responses": {
+                    "200":{
+                        "description": "OK"
+                    },
+                    "401":{
+                        "description": "Unauthorized, access token invalid"
+                    }
+                }
+            }
+        },
+        "/student":{
+            "get": {
+                "description": "Get student list",
+                "tags": ["Student"],
+                "parameters": [],
+                "security": [
+                    {
+                        "bearer":[]
+                    }
+                ],
+                "responses": {
+                    "200":{
+                        "description": "OK"
+                    },
+                    "401":{
+                        "description": "Unauthorized, access token invalid"
                     }
                 }
             }

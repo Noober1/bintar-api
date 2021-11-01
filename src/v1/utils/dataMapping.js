@@ -27,6 +27,7 @@ module.exports = {
     */
     mahasiswa: item => ({
         id: item.id,
+        NIS: item.NIS,
         firstName: item.nama_depan.toLowerCase(),
         lastName: item.nama_belakang.toLowerCase(),
         fullName: (item.nama_depan + ' ' + item.nama_belakang).toLowerCase(),

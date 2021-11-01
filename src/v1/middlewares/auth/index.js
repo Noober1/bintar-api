@@ -20,6 +20,7 @@ const sqlQueryAccount = (type = 'admin', sqlWhere) => {
         })
         .select([
             'administrasi_mahasiswa.id',
+            'administrasi_mahasiswa.NIS',
             'administrasi_mahasiswa.nama_depan',
             'administrasi_mahasiswa.nama_belakang',
             'administrasi_mahasiswa.email',

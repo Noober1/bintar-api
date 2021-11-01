@@ -2,7 +2,7 @@
 const express = require('express')
 const router = express.Router()
 
-const { inventaris, config, auth, user, media, administrasi } = require('./controllers')
+const { inventaris, config, auth, user, media, administrasi, student } = require('./controllers')
 
 router.get('/', (req,res) => {
 	return res.json({
@@ -13,11 +13,14 @@ router.get('/', (req,res) => {
 //controller untuk auth
 router.use('/auth', auth)
 
+//controller untuk configurasi SAS
+router.use('/config', config)
+
 //controller untuk auth
 router.use('/user', user)
 
-//controller untuk configurasi SAS
-router.use('/config', config)
+//controller untuk auth
+router.use('/student', student)
 
 //controller untuk inventaris
 router.use('/inventaris', inventaris)

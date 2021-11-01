@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router()
 const cache = require('../../../lib/cache');
 const { administrasi } = require('../middlewares');
-const { authToken } = require('../utils/useJWT');
+const { authToken, withAuthToken } = require('../utils/useJWT');
 
 const { validationHandler,checkPageAndLimit, validatorRules } = require('../utils');
 const { route } = require('./auth');
@@ -21,6 +21,10 @@ router
 
 router
     .route('/payment')
-    .
+    .get(
+        withAuthToken,
+        checkPageAndLimit,
+        administrasi.getPayment
+    )
     
 module.exports = router

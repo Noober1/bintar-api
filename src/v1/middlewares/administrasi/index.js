@@ -14,5 +14,5 @@ const getPayment = async(req,res,next) => {
 }
 
 module.exports = {
-    getStudent
+    getPayment
 }

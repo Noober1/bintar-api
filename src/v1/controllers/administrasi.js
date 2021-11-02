@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router()
 const cache = require('../../../lib/cache');
 const { administrasi } = require('../middlewares');
-const { authToken, withAuthToken } = require('../utils/useJWT');
+const { withAuthToken } = require('../utils/useJWT');
 
 const { validationHandler,checkPageAndLimit, validatorRules } = require('../utils');
 const { route } = require('./auth');

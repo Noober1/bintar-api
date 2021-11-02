@@ -4,6 +4,7 @@ const administrasi = require('./administrasi')
 const media = require('./media')
 const auth = require('./auth')
 const user = require('./user')
+const classAngkatan = require('./class')
 const student = require('./student')
 
 module.exports = {
@@ -13,5 +14,6 @@ module.exports = {
     student,
     inventaris,
     administrasi,
+    classAngkatan,
     media,
 }

@@ -5,11 +5,13 @@ const utils = require('./inventaris/utils')
 const media = require('./media')
 const user = require('./user')
 const student = require('./student')
+const classAngkatan = require('./class')
 
 module.exports = {
     config,
     user,
     student,
+    classAngkatan,
     inventaris,
     administrasi,
     utils,

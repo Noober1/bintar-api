@@ -20,6 +20,7 @@ const _studentQuery = () => {
         'administrasi_mahasiswa.email',
         'administrasi_mahasiswa.status',
         'administrasi_mahasiswa.jenis',
+        'administrasi_mahasiswa.tahun_masuk',
         'administrasi_kelas_angkatan.nama as kelas_nama',
         'administrasi_kelas_angkatan.semester as kelas_semester',
         'administrasi_kelas_angkatan.angkatan as kelas_angkatan',

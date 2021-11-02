@@ -6,7 +6,7 @@ const pagination = require("../../../../lib/pagination")
 
 const getPayment = async(req,res,next) => {
     try {
-        const getData = await db('administrasi_mahasiswa')
+        const getData = await db('administrasi_kelas_angkatan')
         return res.json(getData)
     } catch (error) {
         next(error)

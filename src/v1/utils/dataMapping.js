@@ -33,6 +33,7 @@ module.exports = {
         fullName: (item.nama_depan + ' ' + item.nama_belakang).toLowerCase(),
         status: item.status,
         type: item.jenis,
+        registerYear: item.tahun_masuk,
         class: {
             name: item.kelas_nama,
             semester: item.semester,
@@ -42,5 +43,11 @@ module.exports = {
             code: item.prodi_kode,
             name: item.prodi_nama
         }
+    }),
+    kelas: item => ({
+        id: item.id,
+        name: item.nama,
+        semester: item.semester,
+        angkatan: item.angkatan
     })
 }

@@ -125,6 +125,49 @@
                 }
             }
         },
+        "/class":{
+            "get": {
+                "description": "Get class list",
+                "tags": ["Class"],
+                "parameters": [
+                    {
+                        "in":"query",
+                        "name":"page",
+                        "default": 1,
+                        "minimum": 1,
+                        "type": "number",
+                        "description": "Halaman yang ditampilkan"
+                    },
+                    {
+                        "in":"query",
+                        "name":"limit",
+                        "default":10,
+                        "minimum": 1,
+                        "type": "number",
+                        "description": "Limit data yang ditampilkan"
+                    },
+                    {
+                        "in":"query",
+                        "name":"search",
+                        "type": "string",
+                        "description": "Cari data berdasarkan nama kelas"
+                    }
+                ],
+                "security": [
+                    {
+                        "bearer":[]
+                    }
+                ],
+                "responses": {
+                    "200":{
+                        "description": "OK"
+                    },
+                    "401":{
+                        "description": "Unauthorized, access token invalid"
+                    }
+                }
+            }
+        },
         "/media": {
             "get": {
                 "description": "Media",
@@ -176,7 +219,7 @@
                 "tags": ["Media"],
                 "parameters": [
                     {
-                        "in":"path",
+                        "in":"query",
                         "name":"page",
                         "default": 1,
                         "minimum": 1,
@@ -184,7 +227,7 @@
                         "description": "Halaman yang ditampilkan"
                     },
                     {
-                        "in":"path",
+                        "in":"query",
                         "name":"limit",
                         "default":10,
                         "minimum": 1,
@@ -248,7 +291,7 @@
                 "description": "Menampilkan data barang",
                 "parameters": [
                     {
-                        "in":"path",
+                        "in":"query",
                         "name":"page",
                         "default": 1,
                         "minimum": 1,
@@ -256,7 +299,7 @@
                         "description": "Halaman yang ditampilkan"
                     },
                     {
-                        "in":"path",
+                        "in":"query",
                         "name":"limit",
                         "default":10,
                         "minimum": 1,
@@ -472,7 +515,7 @@
                 "description": "Menampilkan data input",
                 "parameters": [
                     {
-                        "in":"path",
+                        "in":"query",
                         "name":"page",
                         "default": 1,
                         "minimum": 1,
@@ -480,7 +523,7 @@
                         "description": "Halaman yang ditampilkan"
                     },
                     {
-                        "in":"path",
+                        "in":"query",
                         "name":"limit",
                         "default":10,
                         "minimum": 1,
@@ -570,7 +613,7 @@
                 "description": "Menampilkan data output",
                 "parameters": [
                     {
-                        "in":"path",
+                        "in":"query",
                         "name":"page",
                         "default": 1,
                         "minimum": 1,
@@ -578,7 +621,7 @@
                         "description": "Halaman yang ditampilkan"
                     },
                     {
-                        "in":"path",
+                        "in":"query",
                         "name":"limit",
                         "default":10,
                         "minimum": 1,
@@ -778,7 +821,7 @@
                 "description": "Logs",
                 "parameters": [
                     {
-                        "in":"path",
+                        "in":"query",
                         "name":"page",
                         "default": 1,
                         "minimum": 1,
@@ -786,7 +829,7 @@
                         "description": "Halaman yang ditampilkan"
                     },
                     {
-                        "in":"path",
+                        "in":"query",
                         "name":"limit",
                         "default":10,
                         "minimum": 1,

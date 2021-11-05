@@ -49,5 +49,10 @@ module.exports = {
         name: item.nama,
         semester: item.semester,
         angkatan: item.angkatan
+    }),
+    prodi: item => ({
+        id: item.id,
+        code: item.kode,
+        name: item.nama
     })
 }

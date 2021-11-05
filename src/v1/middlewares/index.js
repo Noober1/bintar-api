@@ -6,6 +6,7 @@ const media = require('./media')
 const user = require('./user')
 const student = require('./student')
 const classAngkatan = require('./class')
+const prodi = require('./prodi')
 
 module.exports = {
     config,
@@ -16,4 +17,5 @@ module.exports = {
     administrasi,
     utils,
     media,
+    prodi,
 }

@@ -1,5 +1,7 @@
 const { check,body } = require('express-validator');
 
+const customValidatorEnum = (input, options) => options.includes(input)
+
 const msg = {
     isNotEmpty:'Data can\'t be empty',
     isString: 'Data expected string',
@@ -8,7 +10,7 @@ const msg = {
     isLength: (min = 1,max = 1) => `Data length invalid: min length ${min} character(s), max length ${max} character(s) required`,
     isIn: list => {
         try {
-            return list.reduce((prevValue,currentValue,currentIndex) => {
+            return 'Data must be one of them: ' + list.reduce((prevValue,currentValue,currentIndex) => {
                 const isLastData = ++currentIndex == list.length
                 if (isLastData && list.length > 1) {
                     return prevValue + `and ${currentValue}.`
@@ -23,7 +25,6 @@ const msg = {
             return '(Error: No data given)'
         }
     }
-
 }
 
 module.exports = {
@@ -157,5 +158,41 @@ module.exports = {
                 .isString().withMessage(msg.isString)
                 .isLength({max:500}).withMessage(msg.isLength(0,500)),
         ]
-    }
+    },
+    // for administrasi student
+    student: () => {
+        return [
+            body('NIS')
+                .not().isEmpty().withMessage(msg.isNotEmpty)
+                .isString().withMessage(msg.isString)
+                .isLength({max:30}).withMessage(msg.isLength(1,30)),
+            body('firstName')
+                .not().isEmpty().withMessage(msg.isNotEmpty)
+                .isString().withMessage(msg.isString)
+                .isLength({max:50}).withMessage(msg.isLength(1,50)),
+            body('lastName')
+                .isString().withMessage(msg.isString)
+                .isLength({max:50}).withMessage(msg.isLength(1,50)),
+            body('email')
+                .not().isEmpty().withMessage(msg.isNotEmpty)
+                .isString().withMessage(msg.isString)
+                .isLength({max:50}).withMessage(msg.isLength(1,50)),
+            body('password')
+                .not().isEmpty().withMessage(msg.isNotEmpty)
+                .isString().withMessage(msg.isString)
+                .isLength({max:50}).withMessage(msg.isLength(1,50)),
+            body('status')
+                .not().isEmpty().withMessage(msg.isNotEmpty)
+                .isIn(['aktif', 'alumni', 'dropout', 'lainnya']).withMessage(msg.isIn(['aktif', 'alumni', 'dropout', 'lainnya'])),
+            body('class')
+                .not().isEmpty().withMessage(msg.isNotEmpty)
+                .isInt().withMessage(msg.isInt(0)),
+            body('type')
+                .not().isEmpty().withMessage(msg.isNotEmpty)
+                .isIn(['reguler','beasiswa']).withMessage(msg.isIn(['reguler','beasiswa'])),
+            body('prodi')
+                .not().isEmpty().withMessage(msg.isNotEmpty)
+                .isInt().withMessage(msg.isInt(0)),
+        ]
+    },
 }

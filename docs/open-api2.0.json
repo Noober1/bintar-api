@@ -123,6 +123,64 @@
                         "description": "Unauthorized, access token invalid"
                     }
                 }
+            },
+            "post": {
+                "description": "Insert data siswa / mahasiswa",
+                "consumes":["application/json"],
+                "security": [
+                    {
+                        "bearer":[]
+                    }
+                ],
+                "tags": ["Student"],
+                "parameters": [
+                    {
+                        "in":"body",
+                        "name":"student",
+                        "schema": {
+                            "required": ["NIS","firstName","lastName","email","password","status","class","type","registerYear","prodi"],
+                            "type" : "object",
+                            "properties": {
+                                "NIS":{
+                                    "type":"string"
+                                },
+                                "firstName":{
+                                    "type": "string"
+                                },
+                                "lastName":{
+                                    "type": "string"
+                                },
+                                "email":{
+                                    "type": "string"
+                                },
+                                "password":{
+                                    "type": "string"
+                                },
+                                "status":{
+                                    "type":"string"
+                                },
+                                "class":{
+                                    "type": "number"
+                                },
+                                "type":{
+                                    "type": "string"
+                                },
+                                "registerYear":{
+                                    "type": "number"
+                                },
+                                "prodi":{
+                                    "type": "number"
+                                }
+                            }
+
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
             }
         },
         "/class":{
@@ -151,6 +209,49 @@
                         "name":"search",
                         "type": "string",
                         "description": "Cari data berdasarkan nama kelas"
+                    }
+                ],
+                "security": [
+                    {
+                        "bearer":[]
+                    }
+                ],
+                "responses": {
+                    "200":{
+                        "description": "OK"
+                    },
+                    "401":{
+                        "description": "Unauthorized, access token invalid"
+                    }
+                }
+            }
+        },
+        "/prodi":{
+            "get": {
+                "description": "Get prodi list",
+                "tags": ["Prodi"],
+                "parameters": [
+                    {
+                        "in":"query",
+                        "name":"page",
+                        "default": 1,
+                        "minimum": 1,
+                        "type": "number",
+                        "description": "Halaman yang ditampilkan"
+                    },
+                    {
+                        "in":"query",
+                        "name":"limit",
+                        "default":10,
+                        "minimum": 1,
+                        "type": "number",
+                        "description": "Limit data yang ditampilkan"
+                    },
+                    {
+                        "in":"query",
+                        "name":"search",
+                        "type": "string",
+                        "description": "Cari data berdasarkan nama prodi"
                     }
                 ],
                 "security": [

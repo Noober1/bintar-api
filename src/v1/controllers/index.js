@@ -6,6 +6,7 @@ const auth = require('./auth')
 const user = require('./user')
 const classAngkatan = require('./class')
 const student = require('./student')
+const prodi = require('./prodi')
 
 module.exports = {
     auth,
@@ -16,4 +17,5 @@ module.exports = {
     administrasi,
     classAngkatan,
     media,
+    prodi
 }

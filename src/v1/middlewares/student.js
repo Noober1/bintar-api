@@ -58,8 +58,12 @@ const postStudent = async(req,res,next) => {
         const getStudentByEmail = await db('administrasi_mahasiswa')
             .where({email})
             .first()
+
+        const getUserByEmail = await db('dbusers')
+            .where({email})
+            .first()
             
-        if (getStudentByEmail) {
+        if (getStudentByEmail || getUserByEmail) {
             throw new sendError({
                 status:httpStatus.BAD_REQUEST,
                 message:'Email already exist',

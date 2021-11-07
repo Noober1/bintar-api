@@ -22,9 +22,11 @@ const _studentQuery = () => {
         'administrasi_mahasiswa.status',
         'administrasi_mahasiswa.jenis',
         'administrasi_mahasiswa.tahun_masuk',
+        'administrasi_kelas_angkatan.id as kelas_id',
         'administrasi_kelas_angkatan.nama as kelas_nama',
         'administrasi_kelas_angkatan.semester as kelas_semester',
         'administrasi_kelas_angkatan.angkatan as kelas_angkatan',
+        'administrasi_prodi.id as prodi_id',
         'administrasi_prodi.kode as prodi_kode',
         'administrasi_prodi.nama as prodi_nama'
     ])
@@ -38,6 +40,19 @@ const getStudent = async(req,res,next) => {
         getStudent.data = getStudent.data.map(dataMapping.mahasiswa)
 
         return res.json(getStudent)
+    } catch (error) {
+        next(error)
+    }
+}
+
+const getStudentById = async(req,res,next) => {
+    try {
+        const getStudent = await _studentQuery().where({
+            "administrasi_mahasiswa.id": req.params.id
+        })
+        .first()
+
+        return res.json(dataMapping.mahasiswa(getStudent))
     } catch (error) {
         next(error)
     }
@@ -124,8 +139,35 @@ const postStudent = async(req,res,next) => {
     }
 }
 
+const deleteStudent = async(req,res,next) => {
+    const { body } = req
+    try {
+        if (!Array.isArray(body)) {
+            throw new sendError({
+                status:httpStatus.BAD_REQUEST,
+                message: 'Data given invalid',
+                code: 'ERR_DATA_INVALID'
+            })
+        }
+
+        const deleting = await db('administrasi_mahasiswa')
+            .select('id')
+            .whereIn('id', body)
+            .del()
+
+        return res.json({
+            success:true,
+            result: deleting
+        })
+    } catch (error) {
+        next(error)
+    }
+}
+
 module.exports = {
     getStudent,
     getStudentByNIS,
-    postStudent
+    postStudent,
+    deleteStudent,
+    getStudentById
 }

@@ -183,6 +183,33 @@
                 }
             }
         },
+        "/student/{id}": {
+            "get": {
+                "tags": ["Student"],
+                "security": [
+                    {
+                        "bearer":[]
+                    }
+                ],
+                "description": "Menampilkan data siswa / mahasiswa berdasarkan ID",
+                "parameters": [
+                    {
+                        "in":"path",
+                        "name":"id",
+                        "required": true,
+                        "default": 1,
+                        "minimum": 1,
+                        "type": "number",
+                        "description": "ID data"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
         "/class":{
             "get": {
                 "description": "Get class list",

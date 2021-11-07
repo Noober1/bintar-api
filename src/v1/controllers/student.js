@@ -35,5 +35,18 @@ router
         validationHandler,
         student.postStudent
     )
+    .delete(
+        withAuthToken,
+        _allowAdmin,
+        student.deleteStudent
+    )
+
+router
+    .route('/:id')
+    .get(
+        withAuthToken,
+        _allowAdmin,
+        student.getStudentById
+    )
 
 module.exports = router

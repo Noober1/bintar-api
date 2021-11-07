@@ -32,14 +32,17 @@ module.exports = {
         lastName: item.nama_belakang.toLowerCase(),
         fullName: (item.nama_depan + ' ' + item.nama_belakang).toLowerCase(),
         status: item.status,
+        email: item.email,
         type: item.jenis,
         registerYear: item.tahun_masuk,
         class: {
+            id: item.kelas_id,
             name: item.kelas_nama,
             semester: item.semester,
             angkatan: item.kelas_angkatan
         },
         prodi: {
+            id: item.prodi_id,
             code: item.prodi_kode,
             name: item.prodi_nama
         }

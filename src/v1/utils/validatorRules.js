@@ -160,7 +160,20 @@ module.exports = {
         ]
     },
     // for administrasi student
-    student: () => {
+    student: (withpassword = true) => {
+        let withPass = () => {
+            return body('password')
+            .not().isEmpty().withMessage(msg.isNotEmpty)
+            .isString().withMessage(msg.isString)
+            .isLength({max:50}).withMessage(msg.isLength(1,50))
+        }
+        let withoutPass = () => {
+            return body('password')
+                .isString().withMessage(msg.isString)
+                .isLength({max:50}).withMessage(msg.isLength(1,50))
+        }
+
+        let passwordField = withpassword ? withPass : withoutPass
         return [
             body('NIS')
                 .not().isEmpty().withMessage(msg.isNotEmpty)
@@ -177,10 +190,7 @@ module.exports = {
                 .not().isEmpty().withMessage(msg.isNotEmpty)
                 .isString().withMessage(msg.isString)
                 .isLength({max:50}).withMessage(msg.isLength(1,50)),
-            body('password')
-                .not().isEmpty().withMessage(msg.isNotEmpty)
-                .isString().withMessage(msg.isString)
-                .isLength({max:50}).withMessage(msg.isLength(1,50)),
+            passwordField(),
             body('status')
                 .not().isEmpty().withMessage(msg.isNotEmpty)
                 .isIn(['aktif', 'alumni', 'dropout', 'lainnya']).withMessage(msg.isIn(['aktif', 'alumni', 'dropout', 'lainnya'])),

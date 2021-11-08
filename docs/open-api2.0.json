@@ -208,6 +208,91 @@
                         "description": "OK"
                     }
                 }
+            },
+            "patch": {
+                "description": "Update data siswa / mahasiswa berdasarkan ID",
+                "consumes":["application/json"],
+                "security": [
+                    {
+                        "bearer":[]
+                    }
+                ],
+                "tags": ["Student"],
+                "parameters": [
+                    {
+                        "in":"body",
+                        "name":"student",
+                        "schema": {
+                            "required": ["NIS","firstName","lastName","email","password","status","class","type","registerYear","prodi"],
+                            "type" : "object",
+                            "properties": {
+                                "NIS":{
+                                    "type":"string"
+                                },
+                                "firstName":{
+                                    "type": "string"
+                                },
+                                "lastName":{
+                                    "type": "string"
+                                },
+                                "email":{
+                                    "type": "string"
+                                },
+                                "password":{
+                                    "type": "string"
+                                },
+                                "status":{
+                                    "type":"string"
+                                },
+                                "class":{
+                                    "type": "number"
+                                },
+                                "type":{
+                                    "type": "string"
+                                },
+                                "registerYear":{
+                                    "type": "number"
+                                },
+                                "prodi":{
+                                    "type": "number"
+                                }
+                            }
+
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/class/{id}": {
+            "get": {
+                "tags": ["Class"],
+                "security": [
+                    {
+                        "bearer":[]
+                    }
+                ],
+                "description": "Menampilkan data kelas berdasarkan ID",
+                "parameters": [
+                    {
+                        "in":"path",
+                        "name":"id",
+                        "required": true,
+                        "default": 1,
+                        "minimum": 1,
+                        "type": "number",
+                        "description": "ID data"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
             }
         },
         "/class":{

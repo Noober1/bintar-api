@@ -48,5 +48,12 @@ router
         _allowAdmin,
         student.getStudentById
     )
+    .patch(
+        withAuthToken,
+        _allowAdmin,
+        validatorRules.student(false),
+        validationHandler,
+        student.updateStudent
+    )
 
 module.exports = router

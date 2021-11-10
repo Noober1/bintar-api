@@ -57,5 +57,19 @@ module.exports = {
         id: item.id,
         code: item.kode,
         name: item.nama
+    }),
+    // mapping for administrasi
+    payment: item => ({
+        id: item.id,
+        registerDate: item.tanggal,
+        admin: {
+            firstName: item.admin_nama_depan,
+            lastName: item.admin_nama_belakang,
+            fullName: item.admin_nama_depan + ' ' + item.admin_nama_belakang,
+            email: item.admin_email
+        },
+        type: item.jenis,
+        price: item.nominal,
+        description: item.deskripsi
     })
 }

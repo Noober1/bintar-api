@@ -293,6 +293,43 @@
                         "description": "OK"
                     }
                 }
+            },
+            "patch": {
+                "description": "Update data kelas / angkatan berdasarkan ID",
+                "consumes":["application/json"],
+                "security": [
+                    {
+                        "bearer":[]
+                    }
+                ],
+                "tags": ["Class"],
+                "parameters": [
+                    {
+                        "in":"body",
+                        "name":"class",
+                        "schema": {
+                            "required": ["name","semester","angkatan"],
+                            "type" : "object",
+                            "properties": {
+                                "name":{
+                                    "type":"string"
+                                },
+                                "semester":{
+                                    "type": "string"
+                                },
+                                "angkatan":{
+                                    "type": "string"
+                                }
+                            }
+
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
             }
         },
         "/class":{
@@ -336,6 +373,43 @@
                         "description": "Unauthorized, access token invalid"
                     }
                 }
+            },
+            "post": {
+                "description": "Insert data kelas / angkatan",
+                "consumes":["application/json"],
+                "security": [
+                    {
+                        "bearer":[]
+                    }
+                ],
+                "tags": ["Class"],
+                "parameters": [
+                    {
+                        "in":"body",
+                        "name":"class",
+                        "schema": {
+                            "required": ["name","semester","angkatan"],
+                            "type" : "object",
+                            "properties": {
+                                "name":{
+                                    "type":"string"
+                                },
+                                "semester":{
+                                    "type": "string"
+                                },
+                                "angkatan":{
+                                    "type": "string"
+                                }
+                            }
+
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
             }
         },
         "/prodi":{
@@ -364,6 +438,49 @@
                         "name":"search",
                         "type": "string",
                         "description": "Cari data berdasarkan nama prodi"
+                    }
+                ],
+                "security": [
+                    {
+                        "bearer":[]
+                    }
+                ],
+                "responses": {
+                    "200":{
+                        "description": "OK"
+                    },
+                    "401":{
+                        "description": "Unauthorized, access token invalid"
+                    }
+                }
+            }
+        },
+        "/administrasi/payment":{
+            "get": {
+                "description": "Get data pembayaran",
+                "tags": ["Administrasi - Payment"],
+                "parameters": [
+                    {
+                        "in":"query",
+                        "name":"page",
+                        "default": 1,
+                        "minimum": 1,
+                        "type": "number",
+                        "description": "Halaman yang ditampilkan"
+                    },
+                    {
+                        "in":"query",
+                        "name":"limit",
+                        "default":10,
+                        "minimum": 1,
+                        "type": "number",
+                        "description": "Limit data yang ditampilkan"
+                    },
+                    {
+                        "in":"query",
+                        "name":"search",
+                        "type": "string",
+                        "description": "Cari data berdasarkan jenis"
                     }
                 ],
                 "security": [

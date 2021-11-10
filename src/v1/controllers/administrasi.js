@@ -24,7 +24,11 @@ router
     .get(
         withAuthToken,
         checkPageAndLimit,
-        administrasi.getPayment
+        administrasi.payment.getPayment
+    )
+    .delete(
+        withAuthToken,
+        administrasi.payment.deletePayment
     )
     
 module.exports = router

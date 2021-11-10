@@ -3,7 +3,7 @@ const httpStatus = require('http-status');
 const cache = require('../../../lib/cache');
 const constants = require('../constants');
 const { classAngkatan } = require('../middlewares');
-const { checkPageAndLimit } = require('../utils');
+const { checkPageAndLimit, validatorRules, validationHandler } = require('../utils');
 const router = express.Router()
 const { withAuthToken } = require('../utils/useJWT');
 
@@ -30,6 +30,13 @@ router
         cache.routeJSON(),
         classAngkatan.getClass
     )
+    .post(
+        withAuthToken,
+        _allowAdmin,
+        validatorRules.class(),
+        validationHandler,
+        classAngkatan.postClass
+    )
     .delete(
         withAuthToken,
         _allowAdmin,
@@ -42,6 +49,13 @@ router
         withAuthToken,
         _allowAdmin,
         classAngkatan.getClassById
+    )
+    .patch(
+        withAuthToken,
+        _allowAdmin,
+        validatorRules.class(),
+        validationHandler,
+        classAngkatan.updateClassById
     )
 
 module.exports = router

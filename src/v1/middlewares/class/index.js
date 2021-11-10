@@ -1,3 +1,4 @@
+const { body } = require('express-validator')
 const httpStatus = require('http-status')
 const db = require('../../../../lib/db')
 const pagination = require('../../../../lib/pagination')
@@ -43,6 +44,72 @@ const getClassById = async(req,res,next) => {
     }
 }
 
+const postClass = async(req,res,next) => {
+    const { body } = req
+
+    try {
+        const checkClassFromDb = await db(CLASS_DB).where({
+            semester: body.semester,
+            angkatan: body.angkatan
+        }).first()
+
+        if (checkClassFromDb) {
+            throw new sendError({
+                status:httpStatus.BAD_REQUEST,
+                message: 'Data with semester and angkatan given already exist',
+                code: 'ERR_DATA_EXIST'
+            })
+        }
+
+        const inserting = await db(CLASS_DB).insert({
+            nama: body.name,
+            semester: body.semester,
+            angkatan: body.angkatan
+        })
+
+        return res.json({
+            success:true,
+            result: inserting
+        })
+    } catch (error) {
+        next(error)
+    }
+}
+
+const updateClassById = async(req,res,next) => {
+    const { body } = req
+    const { id } = req.params
+    try {
+        const checkExistingData = await db(CLASS_DB).where({
+            semester: body.semester,
+            angkatan: body.angkatan
+        }).whereNot('id', id).first()
+
+        console.log(checkExistingData)
+
+        if (checkExistingData) {
+            throw new sendError({
+                status:httpStatus.BAD_REQUEST,
+                message: 'Data with semester and angkatan from other data is exist',
+                code: 'ERR_DATA_EXIST'
+            })
+        }
+
+        const updating = await db(CLASS_DB).where('id',id).update({
+            nama: body.name,
+            semester: body.semester,
+            angkatan: body.angkatan
+        })
+
+        return res.json({
+            success:true,
+            result: updating
+        })
+    } catch (error) {
+        next(error)
+    }
+}
+
 const deleteClassByIds = async(req,res,next) => {
     try {
         if (!Array.isArray(req.body.ids)) {
@@ -67,5 +134,7 @@ const deleteClassByIds = async(req,res,next) => {
 module.exports = {
     getClass,
     getClassById,
-    deleteClassByIds
+    deleteClassByIds,
+    postClass,
+    updateClassById
 }

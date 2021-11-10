@@ -1,6 +1,4 @@
-const { check,body } = require('express-validator');
-
-const customValidatorEnum = (input, options) => options.includes(input)
+const { body } = require('express-validator');
 
 const msg = {
     isNotEmpty:'Data can\'t be empty',
@@ -205,4 +203,18 @@ module.exports = {
                 .isInt().withMessage(msg.isInt(0)),
         ]
     },
+    class: () => {
+        return [
+            body('name')
+                .not().isEmpty().withMessage(msg.isNotEmpty)
+                .isString().withMessage(msg.isString)
+                .isLength({max:50}).withMessage(msg.isLength(1,50)),
+            body('semester')
+                .not().isEmpty().withMessage(msg.isNotEmpty)
+                .isIn([1,2,3,4,5,6,7,8]).withMessage(msg.isIn([1,2,3,4,5,6,7,8])),
+            body('angkatan')
+                .not().isEmpty().withMessage(msg.isNotEmpty)
+                .isInt().withMessage(msg.isInt(4))
+        ]
+    }
 }

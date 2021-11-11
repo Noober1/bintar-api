@@ -71,5 +71,27 @@ module.exports = {
         type: item.jenis,
         price: item.nominal,
         description: item.deskripsi
+    }),
+    invoice: item => ({
+        id: item.id,
+        code: item.code,
+        student: {
+            firstName: item.mahasiswa_nama_depan,
+            lastName: item.mahasiswa_nama_belakang,
+            fullName: item.mahasiswa_nama_depan + ' ' + item.mahasiswa_nama_belakang,
+            email: item.mahasiswa_email,
+            class: item.mahasiswa_kelas_nama
+        },
+        status: item.status,
+        paymentMethod: item.jenis_pembayaran,
+        accountNumber: item.no_rekening,
+        destinationAccount: item.tujuan_rekening,
+        date: {
+            invoice: item.tanggal_invoice,
+            transaction: item.tanggal_transaksi,
+            verification: item.tanggal_verifikasi
+        },
+        refNumber: item.nomor_ref,
+        picture: item.gambar
     })
 }

@@ -5,7 +5,14 @@ const { administrasi } = require('../middlewares');
 const { withAuthToken } = require('../utils/useJWT');
 
 const { validationHandler,checkPageAndLimit, validatorRules } = require('../utils');
-const { route } = require('./auth');
+
+const _allowAdmin = (req,res,next) => {
+    if (req.auth.accountType == 'admin') {
+        next()
+    } else {
+        throw new sendError(sendErrorObject)
+    }
+}
 
 router
     .route('/')
@@ -23,6 +30,7 @@ router
     .route('/payment')
     .get(
         withAuthToken,
+        _allowAdmin,
         checkPageAndLimit,
         administrasi.payment.getPayment
     )
@@ -30,5 +38,22 @@ router
         withAuthToken,
         administrasi.payment.deletePayment
     )
-    
+
+router
+    .route('/payment/:id')
+    .get(
+        withAuthToken,
+        _allowAdmin,
+        administrasi.payment.getPaymentById
+    )
+
+router
+    .route('/payment/:id/invoices')
+    .get(
+        withAuthToken,
+        _allowAdmin,
+        checkPageAndLimit,
+        administrasi.payment.getInvoicesByPaymentId
+    )
+
 module.exports = router

@@ -8,6 +8,19 @@ const httpStatus = require("http-status");
 const PAYMENT_DB = 'administrasi_pembayaran'
 const USER_DB = 'dbusers'
 const INVOICE_DB = 'administrasi_invoice'
+const STUDENT_DB = 'administrasi_mahasiswa'
+const CLASS_DB = 'administrasi_kelas_angkatan'
+const PAYMENT_SELECT = [
+    PAYMENT_DB + '.id',
+    PAYMENT_DB + '.tanggal',
+    PAYMENT_DB + '.admin',
+    PAYMENT_DB + '.jenis',
+    PAYMENT_DB + '.nominal',
+    PAYMENT_DB + '.deskripsi',
+    USER_DB + '.nama_depan as admin_nama_depan',
+    USER_DB + '.nama_belakang as admin_nama_belakang',
+    USER_DB + '.email as admin_email',
+]
 
 const getPayment = async(req,res,next) => {
     try {
@@ -15,17 +28,7 @@ const getPayment = async(req,res,next) => {
             .innerJoin(USER_DB, function () {
                 this.on(PAYMENT_DB + '.admin','=',USER_DB + '.email')
             })
-            .select([
-                PAYMENT_DB + '.id',
-                PAYMENT_DB + '.tanggal',
-                PAYMENT_DB + '.admin',
-                PAYMENT_DB + '.jenis',
-                PAYMENT_DB + '.nominal',
-                PAYMENT_DB + '.deskripsi',
-                USER_DB + '.nama_depan as admin_nama_depan',
-                USER_DB + '.nama_belakang as admin_nama_belakang',
-                USER_DB + '.email as admin_email',
-            ])
+            .select(PAYMENT_SELECT)
             .orderBy('tanggal', 'desc')
             .paginate(pagination(req.page,req.limit))
         getData.data = getData.data.map(dataMapping.payment)
@@ -70,7 +73,80 @@ const deletePayment = async(req,res,next) => {
     }
 }
 
+const getPaymentById = async(req,res,next) => {
+    try {
+        // const getData = await db(PAYMENT_DB).where('id', req.params.id).first()
+        const getData = await db(PAYMENT_DB)
+            .where(PAYMENT_DB + '.id', req.params.id)
+            .innerJoin(USER_DB, function () {
+                this.on(PAYMENT_DB + '.admin','=',USER_DB + '.email')
+            })
+            .select(PAYMENT_SELECT)
+            .first()
+
+        if (!getData) {
+            throw new sendError({
+                status:httpStatus.BAD_REQUEST,
+                message: "Data not found",
+                code: "ERR_DATA_NOT_FOUND"
+            })
+        }
+        
+        return res.json(dataMapping.payment(getData))
+    } catch (error) {
+        next(error)
+    }
+}
+
+const getInvoicesByPaymentId = async(req,res,next) => {
+    try {
+        const getPayment = await db(PAYMENT_DB).where('id', req.params.id).first()
+        if (!getPayment) {
+            throw new sendError({
+                status: httpStatus.BAD_REQUEST,
+                message: 'Payment with id given not found',
+                code: 'ERR_PAYMENT_NOT_FOUND'
+            })
+        }
+
+        const getData = await db(INVOICE_DB)
+            .innerJoin(STUDENT_DB, function () {
+                this.on(INVOICE_DB + '.mahasiswa','=',STUDENT_DB + '.id')
+            })
+            .innerJoin(CLASS_DB, function () {
+                this.on(STUDENT_DB + '.kelas','=',CLASS_DB + '.id')
+            })
+            .select([
+                INVOICE_DB + '.id',
+                INVOICE_DB + '.code',
+                STUDENT_DB + '.nama_depan as mahasiswa_nama_depan',
+                STUDENT_DB + '.nama_belakang as mahasiswa_nama_belakang',
+                STUDENT_DB + '.email as mahasiswa_email',
+                CLASS_DB + '.nama as mahasiswa_kelas_nama',
+                INVOICE_DB + '.status',
+                INVOICE_DB + '.jenis_pembayaran',
+                INVOICE_DB + '.no_rekening',
+                INVOICE_DB + '.tujuan_rekening',
+                INVOICE_DB + '.tanggal_invoice',
+                INVOICE_DB + '.tanggal_transaksi',
+                INVOICE_DB + '.tanggal_verifikasi',
+                INVOICE_DB + '.nomor_ref',
+                INVOICE_DB + '.gambar',
+            ])
+            .where(INVOICE_DB + '.pembayaran', req.params.id)
+            .paginate(pagination(req.page,req.limit))
+
+        getData.data = getData.data.map(dataMapping.invoice)
+
+        return res.json(getData)
+    } catch (error) {
+        next(error)
+    }
+}
+
 module.exports = {
     getPayment,
-    deletePayment
+    deletePayment,
+    getPaymentById,
+    getInvoicesByPaymentId
 }

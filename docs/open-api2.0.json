@@ -498,6 +498,69 @@
                 }
             }
         },
+        "/administrasi/payment/{id}":{
+            "get": {
+                "description": "Get data pembayaran berdasarkan id",
+                "tags": ["Administrasi - Payment"],
+                "parameters": [
+                    {
+                        "in":"query",
+                        "name":"page",
+                        "default": 1,
+                        "minimum": 1,
+                        "type": "number",
+                        "description": "Halaman yang ditampilkan"
+                    },
+                    {
+                        "in":"query",
+                        "name":"limit",
+                        "default":10,
+                        "minimum": 1,
+                        "type": "number",
+                        "description": "Limit data yang ditampilkan"
+                    },
+                    {
+                        "in":"query",
+                        "name":"search",
+                        "type": "string",
+                        "description": "Cari data berdasarkan x"
+                    }
+                ],
+                "security": [
+                    {
+                        "bearer":[]
+                    }
+                ],
+                "responses": {
+                    "200":{
+                        "description": "OK"
+                    },
+                    "401":{
+                        "description": "Unauthorized, access token invalid"
+                    }
+                }
+            }
+        },
+        "/administrasi/payment/{id}/invoices":{
+            "get": {
+                "description": "Get invoice berdasarkan id pembayaran(payment)",
+                "tags": ["Administrasi - Invoice"],
+                "parameters": [],
+                "security": [
+                    {
+                        "bearer":[]
+                    }
+                ],
+                "responses": {
+                    "200":{
+                        "description": "OK"
+                    },
+                    "401":{
+                        "description": "Unauthorized, access token invalid"
+                    }
+                }
+            }
+        },
         "/media": {
             "get": {
                 "description": "Media",

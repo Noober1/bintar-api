@@ -34,6 +34,13 @@ router
         checkPageAndLimit,
         administrasi.payment.getPayment
     )
+    .post(
+        withAuthToken,
+        _allowAdmin,
+        validatorRules.payment(),
+        validationHandler,
+        administrasi.payment.postPayment
+    )
     .delete(
         withAuthToken,
         administrasi.payment.deletePayment
@@ -45,6 +52,13 @@ router
         withAuthToken,
         _allowAdmin,
         administrasi.payment.getPaymentById
+    )
+    .patch(
+        withAuthToken,
+        _allowAdmin,
+        validatorRules.payment('edit'),
+        validationHandler,
+        administrasi.payment.updatePaymentById
     )
 
 router

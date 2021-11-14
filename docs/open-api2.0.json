@@ -496,6 +496,46 @@
                         "description": "Unauthorized, access token invalid"
                     }
                 }
+            },
+            "post": {
+                "description": "Insert data pembayaran",
+                "consumes":["application/json"],
+                "security": [
+                    {
+                        "bearer":[]
+                    }
+                ],
+                "tags": ["Administrasi - Payment"],
+                "parameters": [
+                    {
+                        "in":"body",
+                        "name":"class",
+                        "schema": {
+                            "required": ["type","admin","price","description"],
+                            "type" : "object",
+                            "properties": {
+                                "type":{
+                                    "type":"string"
+                                },
+                                "admin":{
+                                    "type": "string"
+                                },
+                                "price":{
+                                    "type": "integer"
+                                },
+                                "description":{
+                                    "type": "string"
+                                }
+                            }
+
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
             }
         },
         "/administrasi/payment/{id}":{
@@ -537,6 +577,46 @@
                     },
                     "401":{
                         "description": "Unauthorized, access token invalid"
+                    }
+                }
+            },
+            "patch": {
+                "description": "Update data pembayaran berdasarkan ID",
+                "consumes":["application/json"],
+                "security": [
+                    {
+                        "bearer":[]
+                    }
+                ],
+                "tags": ["Administrasi - Payment"],
+                "parameters": [
+                    {
+                        "in":"body",
+                        "name":"class",
+                        "schema": {
+                            "required": ["type","description"],
+                            "type" : "object",
+                            "properties": {
+                                "type":{
+                                    "type":"string"
+                                },
+                                "admin":{
+                                    "type": "string"
+                                },
+                                "price":{
+                                    "type": "integer"
+                                },
+                                "description":{
+                                    "type": "string"
+                                }
+                            }
+
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
                     }
                 }
             }

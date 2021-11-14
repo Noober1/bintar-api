@@ -39,6 +39,35 @@ const getPayment = async(req,res,next) => {
     }
 }
 
+const postPayment = async(req,res,next) => {
+    const { admin, type, description, price } = req.body
+    try {
+        const getUser = await db(USER_DB).where('email', admin).first()
+        if (!getUser) {
+            throw new sendError({
+                status:400,
+                message: 'Administrator with email given not found',
+                code: 'ERR_ADMIN_NOT_FOUND'
+            })
+        }
+
+        const inserting = await db(PAYMENT_DB).insert({
+            tanggal: new Date(),
+            admin: admin,
+            jenis: type,
+            nominal: price,
+            deskripsi: description
+        })
+        
+        return res.json({
+            success:true,
+            result:inserting
+        })
+    } catch (error) {
+        next(error)
+    }
+}
+
 const deletePayment = async(req,res,next) => {
     const { ids } = req.body
 
@@ -67,6 +96,23 @@ const deletePayment = async(req,res,next) => {
         return res.json({
             success:true,
             result: deleting
+        })
+    } catch (error) {
+        next(error)
+    }
+}
+
+const updatePaymentById = async(req,res,next) => {
+    const { type, description } = req.body
+    try {
+        const updating = await db(PAYMENT_DB).where('id', req.params.id).update({
+            jenis: type,
+            deskripsi: description
+        })
+
+        return res.json({
+            success:true,
+            result: updating
         })
     } catch (error) {
         next(error)
@@ -146,7 +192,9 @@ const getInvoicesByPaymentId = async(req,res,next) => {
 
 module.exports = {
     getPayment,
+    postPayment,
     deletePayment,
+    updatePaymentById,
     getPaymentById,
     getInvoicesByPaymentId
 }

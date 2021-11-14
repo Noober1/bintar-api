@@ -216,5 +216,34 @@ module.exports = {
                 .not().isEmpty().withMessage(msg.isNotEmpty)
                 .isInt().withMessage(msg.isInt(4))
         ]
+    },
+    payment: (mode = 'add') => {
+        const fieldAddMode = () => {
+            if (mode === 'add') {
+                return [
+                    body('type')
+                        .not().isEmpty().withMessage(msg.isNotEmpty)
+                        .isString().withMessage(msg.isString)
+                        .isLength({max:50}).withMessage(msg.isLength(1,50)),
+                    body('price')
+                        .not().isEmpty().withMessage(msg.isNotEmpty)
+                        .isInt({min:09,max:999999999}).withMessage(msg.isInt(0,999999999))
+                ]
+            } else {
+                return []
+            }
+        }
+
+        return [
+            body('admin')
+                .not().isEmpty().withMessage(msg.isNotEmpty)
+                .isString().withMessage(msg.isString)
+                .isLength({max:50}).withMessage(msg.isLength(1,50)),
+            body('description')
+                .not().isEmpty().withMessage(msg.isNotEmpty)
+                .isString().withMessage(msg.isString)
+                .isLength({max:500}).withMessage(msg.isLength(1,500)),
+            ...fieldAddMode()
+        ]
     }
 }

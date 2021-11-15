@@ -49,8 +49,6 @@ router
 router
     .route('/payment/:id')
     .get(
-        withAuthToken,
-        _allowAdmin,
         administrasi.payment.getPaymentById
     )
     .patch(

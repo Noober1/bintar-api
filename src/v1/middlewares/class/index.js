@@ -7,7 +7,7 @@ const { dataMapping, sendError } = require('../../utils')
 const CLASS_DB = 'administrasi_kelas_angkatan'
 
 const getClass = async(req,res,next) => {
-    const { search } = req.query
+    const { search, isActive } = req.query
     console.log(req.query)
     try {
         const getData = await db(CLASS_DB)
@@ -16,6 +16,7 @@ const getClass = async(req,res,next) => {
                 {column: 'semester', order:'desc'},
             ])
             .where('nama', 'like', `%${search || ''}%`)
+            .where('status', 'like',`${isActive ? 'aktif' : '%%'}`)
             .paginate(pagination(req.page,req.limit))
 
         getData.data = getData.data.map(dataMapping.kelas)

@@ -51,7 +51,8 @@ module.exports = {
         id: item.id,
         name: item.nama,
         semester: item.semester,
-        angkatan: item.angkatan
+        angkatan: item.angkatan,
+        isActive: item.status == 'aktif'
     }),
     prodi: item => ({
         id: item.id,

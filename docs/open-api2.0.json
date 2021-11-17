@@ -639,6 +639,40 @@
                         "description": "Unauthorized, access token invalid"
                     }
                 }
+            },
+            "post": {
+                "description": "Batch insert invoice berdasarkan list id kelas dan list id prodi",
+                "consumes":["application/json"],
+                "security": [
+                    {
+                        "bearer":[]
+                    }
+                ],
+                "tags": ["Administrasi - Invoice","Administrasi - Payment"],
+                "parameters": [
+                    {
+                        "in":"body",
+                        "name":"invoice",
+                        "schema": {
+                            "required": ["class","prodi"],
+                            "type" : "object",
+                            "properties": {
+                                "class":{
+                                    "type":"array"
+                                },
+                                "prodi":{
+                                    "type":"array"
+                                }
+                            }
+
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
             }
         },
         "/media": {

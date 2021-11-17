@@ -1,11 +1,16 @@
 const Crypto = require('crypto')
 
-const createPassword = (password) => {
+/**
+ * Password generator
+ * @param {string} password - password to generate
+ * @returns Returning generated password
+ */
+const createPassword = (password, algorithm = 'sha1', encoding = 'hex') => {
     try {
         if (!password) {
             throw new Error('Password invalid')
         }
-        return Crypto.createHash('sha1').update(password).digest('hex')
+        return Crypto.createHash(algorithm).update(password).digest(encoding)
     } catch (error) {
         console.error(error)
         return false

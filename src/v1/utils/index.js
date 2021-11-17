@@ -6,6 +6,7 @@ const sendError = require('./sendError')
 const checkPageAndLimit = require('./checkPageAndLimit')
 const dataMapping = require('./dataMapping')
 const createPassword = require('./createPassword')
+const stringReplaceArray = require('./stringReplaceArray')
 
 module.exports = {
     dataMapping,
@@ -15,5 +16,6 @@ module.exports = {
     validatorRules,
     sendError,
     checkPageAndLimit,
-    createPassword
+    createPassword,
+    stringReplaceArray
 }

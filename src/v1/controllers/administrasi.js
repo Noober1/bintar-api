@@ -67,5 +67,11 @@ router
         checkPageAndLimit,
         administrasi.payment.getInvoicesByPaymentId
     )
+    .post(
+        withAuthToken,
+        _allowAdmin,
+        checkPageAndLimit,
+        administrasi.payment.postBatchInvoice
+    )
 
 module.exports = router

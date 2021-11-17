@@ -1,4 +1,4 @@
-const { sendError, dataMapping } = require("../../utils")
+const { sendError, dataMapping, randomString, stringReplaceArray, getDataFromDb } = require("../../utils")
 const db = require('../../../../lib/db');
 const rootDir = require("../../../../lib/rootDir");
 const path = require('path')
@@ -190,11 +190,109 @@ const getInvoicesByPaymentId = async(req,res,next) => {
     }
 }
 
+const postBatchInvoice = async(req,res,next) => {
+    const { class:classIds, prodi, includeBeasiswa } = req.body
+    try {
+        if (!classIds || !prodi) {
+            throw new sendError({
+                status:httpStatus.BAD_REQUEST,
+                message: "Some data requirement(s) is missing",
+                code: "ERR_DATA_MISSING"
+            })
+        }
+
+        if (!Array.isArray(classIds) || !Array.isArray(prodi)) {
+            throw new sendError({
+                status:httpStatus.BAD_REQUEST,
+                message: "Data given invalid",
+                code: "ERR_DATA_INVALID"
+            })
+        }
+
+        let queryGetStudent = db(STUDENT_DB)
+            .select('id','NIS','email','status','kelas','tahun_masuk','jenis','prodi')
+            .where('status','aktif')
+            .whereIn('kelas', classIds)
+
+        // 
+        if (prodi.length > 0) {
+            queryGetStudent = queryGetStudent.whereIn('prodi', prodi)
+        }
+
+        // exclude student with type 'beasiswa'. If it so, these student will not
+        // receive invoice
+        if (!includeBeasiswa) {
+            queryGetStudent = queryGetStudent.whereNot('jenis', 'beasiswa')
+        }
+
+        const getStudentData = await queryGetStudent
+
+        if (getStudentData.length < 1) {
+            return res.status(httpStatus.CREATED).json({
+                success:true,
+                message: "No data to insert",
+                code: "NO_DATA_TO_INSERT"
+            })
+        }
+
+        // this is for MYSQL query for whereIn in database invoice
+        const getStudentIdList = getStudentData.map(item => item.id)
+
+        // find invoice with related payment id AND student id in list
+        const getInvoiceByListId = await db(INVOICE_DB)
+            .select('mahasiswa')
+            .where('pembayaran', req.params.id)
+            .whereIn('mahasiswa', getStudentIdList)
+
+        // creating variable invoice student id list
+        const studentIdListFromInvoice = getInvoiceByListId.map(item => item.mahasiswa)
+
+        // filtering student data. So, student that already have invoice
+        // will be excluded from creating invoices
+        const studentList = getStudentData.filter(item => !studentIdListFromInvoice.includes(item.id))
+
+        if (studentList.length < 1) {
+            return res.status(httpStatus.CREATED).json({
+                success:true,
+                message: "No data to insert",
+                code: "NO_DATA_TO_INSERT"
+            })
+        }
+
+        const getConfig = await getDataFromDb()
+        const getYear = new Date().getFullYear()
+
+        const data2insert = studentList.map(item => {
+            let generatedRandomString = randomString(10).toUpperCase()
+            let code = stringReplaceArray(
+                getConfig.administrasi_invoice,
+                ['[YEAR]','[STUDENT]','[CODE]'],
+                [getYear, item.id, generatedRandomString]
+            )
+            return {
+                code,
+                mahasiswa: item.id,
+                pembayaran: parseInt(req.params.id)
+            }
+        })
+
+        const inserting = await db(INVOICE_DB).insert(data2insert)
+
+        return res.json({
+            success:true,
+            result:inserting
+        })
+    } catch (error) {
+        next(error)
+    }
+}
+
 module.exports = {
     getPayment,
     postPayment,
     deletePayment,
     updatePaymentById,
     getPaymentById,
-    getInvoicesByPaymentId
+    getInvoicesByPaymentId,
+    postBatchInvoice
 }

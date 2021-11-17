@@ -8,7 +8,6 @@ const CLASS_DB = 'administrasi_kelas_angkatan'
 
 const getClass = async(req,res,next) => {
     const { search, isActive } = req.query
-    console.log(req.query)
     try {
         const getData = await db(CLASS_DB)
             .orderBy([
@@ -65,7 +64,8 @@ const postClass = async(req,res,next) => {
         const inserting = await db(CLASS_DB).insert({
             nama: body.name,
             semester: body.semester,
-            angkatan: body.angkatan
+            angkatan: body.angkatan,
+            status: body.isActive ? 'aktif' : 'nonaktif'
         })
 
         return res.json({
@@ -86,8 +86,6 @@ const updateClassById = async(req,res,next) => {
             angkatan: body.angkatan
         }).whereNot('id', id).first()
 
-        console.log(checkExistingData)
-
         if (checkExistingData) {
             throw new sendError({
                 status:httpStatus.BAD_REQUEST,
@@ -99,7 +97,8 @@ const updateClassById = async(req,res,next) => {
         const updating = await db(CLASS_DB).where('id',id).update({
             nama: body.name,
             semester: body.semester,
-            angkatan: body.angkatan
+            angkatan: body.angkatan,
+            status: body.isActive ? 'aktif' : 'nonaktif'
         })
 
         return res.json({

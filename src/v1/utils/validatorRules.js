@@ -214,7 +214,10 @@ module.exports = {
                 .isIn([1,2,3,4,5,6,7,8]).withMessage(msg.isIn([1,2,3,4,5,6,7,8])),
             body('angkatan')
                 .not().isEmpty().withMessage(msg.isNotEmpty)
-                .isInt().withMessage(msg.isInt(4))
+                .isInt().withMessage(msg.isInt(4)),
+            body('isActive')
+                .not().isEmpty().withMessage(msg.isNotEmpty)
+                .isBoolean().withMessage(msg.isBoolean),
         ]
     },
     payment: (mode = 'add') => {

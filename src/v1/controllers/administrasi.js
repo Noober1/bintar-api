@@ -74,4 +74,13 @@ router
         administrasi.payment.postBatchInvoice
     )
 
+// invoice
+router
+    .route('/invoice')
+    .get(
+        withAuthToken,
+        checkPageAndLimit,
+        administrasi.invoice.getInvoice
+    )
+
 module.exports = router

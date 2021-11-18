@@ -214,7 +214,8 @@ const postBatchInvoice = async(req,res,next) => {
             .where('status','aktif')
             .whereIn('kelas', classIds)
 
-        // 
+        // if prodi isn't empty, add additional query where prodi
+        // is in list of prodi from request body
         if (prodi.length > 0) {
             queryGetStudent = queryGetStudent.whereIn('prodi', prodi)
         }

@@ -83,4 +83,10 @@ router
         administrasi.invoice.getInvoice
     )
 
+router
+    .route('/getInvoice')
+    .get(
+        administrasi.invoice.getInvoiceByQueryCode
+    )
+
 module.exports = router

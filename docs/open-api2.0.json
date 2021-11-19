@@ -675,6 +675,66 @@
                 }
             }
         },
+        "/administrasi/invoice":{
+            "get": {
+                "description": "Get all invoice",
+                "tags": ["Administrasi - Invoice"],
+                "parameters": [
+                    {
+                        "in":"query",
+                        "name":"page",
+                        "default": 1,
+                        "minimum": 1,
+                        "type": "number",
+                        "description": "Halaman yang ditampilkan"
+                    },
+                    {
+                        "in":"query",
+                        "name":"limit",
+                        "default":10,
+                        "minimum": 1,
+                        "type": "number",
+                        "description": "Limit data yang ditampilkan"
+                    }
+                ],
+                "security": [
+                    {
+                        "bearer":[]
+                    }
+                ],
+                "responses": {
+                    "200":{
+                        "description": "OK"
+                    },
+                    "401":{
+                        "description": "Unauthorized, access token invalid"
+                    }
+                }
+            }
+        },
+        "/administrasi/getInvoice":{
+            "get": {
+                "description": "Cari invoice berdasarkan nomor invoice",
+                "tags": ["Administrasi - Invoice"],
+                "parameters": [
+                    {
+                        "in":"query",
+                        "required": true,
+                        "name":"code",
+                        "type": "string",
+                        "description": "Nomor invoice"
+                    }
+                ],
+                "responses": {
+                    "200":{
+                        "description": "OK"
+                    },
+                    "401":{
+                        "description": "Unauthorized, access token invalid"
+                    }
+                }
+            }
+        },
         "/media": {
             "get": {
                 "description": "Media",

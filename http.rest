@@ -4,9 +4,9 @@ POST http://localhost:8080/v1/auth/login
 Content-Type: application/json
 
 {
-    "username":"cucu.ruhiyatna@gmail.com",
+    "username":"cucu.ruhiyatna3@gmail.com",
     "password":"kekaishi123",
-    "app": "administrasi"
+    "app": "inventaris"
 }
 
 # {
@@ -27,15 +27,6 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50VHlwZSI6I
 GET http://localhost:8080/v1/class
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50VHlwZSI6ImFkbWluIiwiZW1haWwiOiJjdWN1LnJ1aGl5YXRuYTNAZ21haWwuY29tIiwibGV2ZWwiOiJzdXBlcnVzZXIiLCJwZXJtaXNzaW9uIjpbXSwiaWF0IjoxNjM3MTU3NDgxfQ.69Os2t6XMyd7x5X5Egf6gcKRPEha5nmNvyILj3cAnz0
 ###
-GET http://localhost:8080/v1/administrasi/invoice
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50VHlwZSI6InN0dWRlbnQiLCJlbWFpbCI6ImN1Y3UucnVoaXlhdG5hQGdtYWlsLmNvbSIsInR5cGUiOiJyZWd1bGVyIiwiaWF0IjoxNjM3MjA2NjQ3fQ.spnoCDglfFMSSlF2Z5q56lsE7ilbdxYp3Cl3ziyHnz0
-###
-GET http://localhost:8080/v1/administrasi/invoice
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50VHlwZSI6ImFkbWluIiwiZW1haWwiOiJjdWN1LnJ1aGl5YXRuYTNAZ21haWwuY29tIiwibGV2ZWwiOiJzdXBlcnVzZXIiLCJwZXJtaXNzaW9uIjpbXSwiaWF0IjoxNjM2NjAwMTczfQ.4D7OWT2zaC9UxOz_-SRvpM3uRrxrYgHNz9mgjQUztN4
-###
-GET http://localhost:8080/v1/administrasi/getInvoice?code=INV/2021/23/5EM661HJEA
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50VHlwZSI6ImFkbWluIiwiZW1haWwiOiJjdWN1LnJ1aGl5YXRuYTNAZ21haWwuY29tIiwibGV2ZWwiOiJzdXBlcnVzZXIiLCJwZXJtaXNzaW9uIjpbXSwiaWF0IjoxNjM2NjAwMTczfQ.4D7OWT2zaC9UxOz_-SRvpM3uRrxrYgHNz9mgjQUztN4
-###
 POST http://localhost:8080/v1/administrasi/payment/1/invoices
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50VHlwZSI6ImFkbWluIiwiZW1haWwiOiJjdWN1LnJ1aGl5YXRuYTNAZ21haWwuY29tIiwibGV2ZWwiOiJzdXBlcnVzZXIiLCJwZXJtaXNzaW9uIjpbXSwiaWF0IjoxNjM2NjAwMTczfQ.4D7OWT2zaC9UxOz_-SRvpM3uRrxrYgHNz9mgjQUztN4
 Content-Type: application/json
@@ -44,3 +35,6 @@ Content-Type: application/json
     "class":[2,3,5,6],
     "prodi":[2]
 }
+###
+GET http://localhost:8080/v1/administrasi/getInvoice?code=INV/2021/26/ELEZGRKS2K
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50VHlwZSI6ImFkbWluIiwiZW1haWwiOiJjdWN1LnJ1aGl5YXRuYTNAZ21haWwuY29tIiwibGV2ZWwiOiJzdXBlcnVzZXIiLCJwZXJtaXNzaW9uIjpbXSwiaWF0IjoxNjM2NjAwMTczfQ.4D7OWT2zaC9UxOz_-SRvpM3uRrxrYgHNz9mgjQUztN4

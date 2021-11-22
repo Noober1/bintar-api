@@ -125,5 +125,13 @@ module.exports = {
         },
         refNumber: item.nomor_ref,
         picture: item.gambar
+    }),
+    bankAccount:item => ({
+        id: item.id,
+        code: item.kode_bank,
+        number: item.no_rekening,
+        name: item.nama_bank,
+        alias: item.nama_alias,
+        owner: item.nama_pemilik
     })
 }

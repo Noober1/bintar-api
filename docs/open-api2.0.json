@@ -719,6 +719,38 @@
                 "parameters": [
                     {
                         "in":"query",
+                        "name":"page",
+                        "default": 1,
+                        "minimum": 1,
+                        "type": "number",
+                        "description": "Halaman yang ditampilkan"
+                    },
+                    {
+                        "in":"query",
+                        "name":"limit",
+                        "default":10,
+                        "minimum": 1,
+                        "type": "number",
+                        "description": "Limit data yang ditampilkan"
+                    }
+                ],
+                "responses": {
+                    "200":{
+                        "description": "OK"
+                    },
+                    "401":{
+                        "description": "Unauthorized, access token invalid"
+                    }
+                }
+            }
+        },
+        "/administrasi/account":{
+            "get": {
+                "description": "Cari daftar nomor rekening",
+                "tags": ["Administrasi - Account"],
+                "parameters": [
+                    {
+                        "in":"query",
                         "required": true,
                         "name":"code",
                         "type": "string",

@@ -89,4 +89,12 @@ router
         administrasi.invoice.getInvoiceByQueryCode
     )
 
+// account
+router
+    .route('/account')
+    .get(
+        checkPageAndLimit,
+        administrasi.account.getAccount
+    )
+
 module.exports = router

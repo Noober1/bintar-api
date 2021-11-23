@@ -7,6 +7,7 @@ const pinoHttp = require('pino-http')
 const bodyParser = require('body-parser')
 const cors = require('cors')
 const db = require('./lib/db')
+const helmet = require('helmet')
 
 module.exports = function main (options, cb) {
 
@@ -53,6 +54,9 @@ module.exports = function main (options, cb) {
 		next()
 	})
 
+	// helmet middleware
+	app.use(helmet())
+
 	// cors configuration
 	app.use(cors())
 
@@ -81,7 +85,7 @@ module.exports = function main (options, cb) {
 		next(httpErrors(404, `Route not found: ${req.url}`))
 	})
 
-	app.use(function fiveHundredHandler (err, req, res, next) {
+	app.use((err, req, res, next) => {
 		if (err.status >= 500) {
 			logger.error(err)
 		}

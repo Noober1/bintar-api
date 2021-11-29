@@ -36,8 +36,14 @@ const showMediaByName = async(req,res,next) => {
 
 const getMediaByImage = async(req,res,next) => {
     try {
+        const whereQuery = { jenis: 'image' }
+
+        if (req.query.email) {
+            whereQuery.user = req.query.email
+        }
+
         const getData = await db('media')
-            .where({ jenis: 'image' })
+            .where(whereQuery)
             .orderBy('tanggal_dibuat','desc')
             .paginate(pagination(req.page,req.limit));
 
@@ -57,10 +63,12 @@ const postMedia = async(req,res,next) => {
     // this is a static variable for database field 'jenis'
     const jenis = 'image'
 
-    const { title, description } = req.body
+    const { title, description, app, user } = req.body
 
     try {
         const file = req.file.path;
+        const appList = ['inventaris','administrasi']
+
         if (!file) {
             throw new sendError({
                 status: 500,
@@ -71,6 +79,8 @@ const postMedia = async(req,res,next) => {
 
         const dataToInsert = {
             nama: req.file.filename,
+            app: appList.includes(app) ? app : 'inventaris',
+            user: user || null,
             judul: title ?? req.file.filename,
             jenis: jenis,
             deskripsi: description ?? 'Tidak ada deskripsi'

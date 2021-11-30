@@ -117,6 +117,7 @@ module.exports = {
         status: item.status,
         paymentMethod: item.jenis_pembayaran,
         accountNumber: item.no_rekening,
+        sender: item.pembayar,
         destinationAccount: item.tujuan_rekening,
         date: {
             invoice: item.tanggal_invoice,

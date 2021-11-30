@@ -78,6 +78,7 @@ const getInvoiceByQueryCode = async(req,res,next) => {
                 INVOICE_DB + '.tanggal_invoice',
                 INVOICE_DB + '.tanggal_transaksi',
                 INVOICE_DB + '.tanggal_verifikasi',
+                INVOICE_DB + '.pembayar',
                 INVOICE_DB + '.nomor_ref',
                 INVOICE_DB + '.gambar',
                 STUDENT_DB + '.NIS as mahasiswa_NIS',

@@ -7,6 +7,7 @@ const checkPageAndLimit = require('./checkPageAndLimit')
 const dataMapping = require('./dataMapping')
 const createPassword = require('./createPassword')
 const stringReplaceArray = require('./stringReplaceArray')
+const getMedia = require('./getMedia')
 
 module.exports = {
     dataMapping,
@@ -17,5 +18,6 @@ module.exports = {
     sendError,
     checkPageAndLimit,
     createPassword,
-    stringReplaceArray
+    stringReplaceArray,
+    getMedia
 }

@@ -744,6 +744,55 @@
                 }
             }
         },
+        "/administrasi/invoice/{id}/send":{
+            "post": {
+                "description": "Kirim bukti transfer",
+                "consumes":["application/json"],
+                "security": [
+                    {
+                        "bearer":[]
+                    }
+                ],
+                "tags": ["Administrasi - Invoice"],
+                "parameters": [
+                    {
+                        "in":"body",
+                        "name":"invoice",
+                        "schema": {
+                            "required": ["transactionDate","accountNumber","refNumber","sender","picture","destinationAccount"],
+                            "type" : "object",
+                            "properties": {
+                                "transactionDate":{
+                                    "description": "date format: yyyy-MM-dd hh:mm:ss",
+                                    "type":"string"
+                                },
+                                "accountNumber":{
+                                    "type":"string"
+                                },
+                                "refNumber":{
+                                    "type":"string"
+                                },
+                                "sender":{
+                                    "type":"string"
+                                },
+                                "picture":{
+                                    "type":"string"
+                                },
+                                "destinationAccount":{
+                                    "type":"string"
+                                }
+                            }
+
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
         "/administrasi/account":{
             "get": {
                 "description": "Cari daftar nomor rekening",

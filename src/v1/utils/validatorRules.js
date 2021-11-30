@@ -3,6 +3,7 @@ const { body } = require('express-validator');
 const msg = {
     isNotEmpty:'Data can\'t be empty',
     isString: 'Data expected string',
+    isDate: 'Data expected date',
     isInt: (min = 1,max = 65535) => `Data expected int between ${min} to ${max}`,
     isBoolean: 'Data expected boolean',
     isLength: (min = 1,max = 1) => `Data length invalid: min length ${min} character(s), max length ${max} character(s) required`,
@@ -247,6 +248,32 @@ module.exports = {
                 .isString().withMessage(msg.isString)
                 .isLength({max:500}).withMessage(msg.isLength(1,500)),
             ...fieldAddMode()
+        ]
+    },
+    receipt: () => {
+        return [
+            body('transactionDate')
+                .not().isEmpty().withMessage(msg.isNotEmpty),
+            body('accountNumber')
+                .not().isEmpty().withMessage(msg.isNotEmpty)
+                .isString().withMessage(msg.isString)
+                .isLength({max:100}).withMessage(msg.isLength(1,100)),
+            body('sender')
+                .not().isEmpty().withMessage(msg.isNotEmpty)
+                .isString().withMessage(msg.isString)
+                .isLength({max:100}).withMessage(msg.isLength(1,100)),
+            body('refNumber')
+                .not().isEmpty().withMessage(msg.isNotEmpty)
+                .isString().withMessage(msg.isString)
+                .isLength({max:100}).withMessage(msg.isLength(1,100)),
+            body('picture')
+                .not().isEmpty().withMessage(msg.isNotEmpty)
+                .isString().withMessage(msg.isString)
+                .isLength({max:500}).withMessage(msg.isLength(1,500)),
+            body('destinationAccount')
+                .not().isEmpty().withMessage(msg.isNotEmpty)
+                .isString().withMessage(msg.isString)
+                .isLength({max:15}).withMessage(msg.isLength(1,15)),
         ]
     }
 }

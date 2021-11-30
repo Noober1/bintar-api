@@ -97,4 +97,14 @@ router
         administrasi.account.getAccount
     )
 
+// receipt
+router
+    .route('/receipt/:id/send')
+    .post(
+        withAuthToken,
+        validatorRules.receipt(),
+        validationHandler,
+        administrasi.receipt.postSendReceipt
+    )
+
 module.exports = router

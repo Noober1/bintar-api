@@ -40,3 +40,16 @@ GET http://localhost:8080/v1/administrasi/getInvoice?code=INV/2021/26/ELEZGRKS2K
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50VHlwZSI6ImFkbWluIiwiZW1haWwiOiJjdWN1LnJ1aGl5YXRuYTNAZ21haWwuY29tIiwibGV2ZWwiOiJzdXBlcnVzZXIiLCJwZXJtaXNzaW9uIjpbXSwiaWF0IjoxNjM2NjAwMTczfQ.4D7OWT2zaC9UxOz_-SRvpM3uRrxrYgHNz9mgjQUztN4
 ###
 GET http://localhost:8080/v1/administrasi/account
+###
+POST http://localhost:8080/v1/administrasi/receipt/63/send
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50VHlwZSI6ImFkbWluIiwiZW1haWwiOiJjdWN1LnJ1aGl5YXRuYTNAZ21haWwuY29tIiwibGV2ZWwiOiJzdXBlcnVzZXIiLCJwZXJtaXNzaW9uIjpbXSwiaWF0IjoxNjM2NjAwMTczfQ.4D7OWT2zaC9UxOz_-SRvpM3uRrxrYgHNz9mgjQUztN4
+Content-Type: application/json
+
+{
+    "transactionDate": "Tue Nov 30 2021 08:59:06 GMT+0700",
+    "accountNumber": "213123123123",
+    "refNumber": "2222222222222222222222222",
+    "sender": "Manakutau",
+    "picture": "file-1632979098258.png",
+    "destinationAccount": "008228002992003"
+}

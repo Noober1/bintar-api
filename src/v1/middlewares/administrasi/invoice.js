@@ -125,7 +125,49 @@ const getInvoiceByQueryCode = async(req,res,next) => {
     }
 }
 
+const patchInvoiceByQueryCode = async(req,res,next) => {
+    const { code } = req.query
+    const { status, paymentMethod } = req.body
+    try {
+        // if invoice code doesn't received from query
+        if (!code) {
+            throw new sendError({
+                status:httpStatus.BAD_REQUEST,
+                message: "Invoice code invalid",
+                code: "ERR_CODE_INVALID"
+            })
+        }
+
+        // get invoice data with code
+        const getDataByQueryCode = await db(INVOICE_DB)
+            .where(INVOICE_DB + '.code', code)
+            .first()
+
+        if (!getDataByQueryCode) {
+            throw new sendError({
+                status:httpStatus.NOT_FOUND,
+                message: "Data not found",
+                code: "ERR_DATA_NOT_FOUND"
+            })
+        }
+
+        const updating = await db(INVOICE_DB).where(INVOICE_DB + '.code', code).update({
+            status:status || 'paid',
+            jenis_pembayaran: paymentMethod || 'transfer',
+            tanggal_verifikasi: new Date()
+        })
+
+        return res.json({
+            success:true,
+            data:updating
+        })
+    } catch (error) {
+        next(error)
+    }
+}
+
 module.exports = {
     getInvoice,
-    getInvoiceByQueryCode
+    getInvoiceByQueryCode,
+    patchInvoiceByQueryCode
 }

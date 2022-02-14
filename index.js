@@ -124,8 +124,9 @@ module.exports = function main (options, cb) {
 		//execute database connection check
 		const isError = await checkDbConnection()
 		if (isError) {
+			console.log('Database connection: NOT OK')
 			console.log(isError)
-			return ready(new Error(isError.message))
+			process.exit(0)
 		} else {
 			console.log('Database connection: OK')
 		}

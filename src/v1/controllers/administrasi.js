@@ -88,6 +88,11 @@ router
     .get(
         administrasi.invoice.getInvoiceByQueryCode
     )
+    .patch(
+        withAuthToken,
+        _allowAdmin,
+        administrasi.invoice.patchInvoiceByQueryCode
+    )
 
 // account
 router

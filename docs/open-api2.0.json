@@ -742,6 +742,32 @@
                         "description": "Unauthorized, access token invalid"
                     }
                 }
+            },
+            "patch": {
+                "description": "Verifikasi invoice, hanya bisa diakses oleh admin",
+                "tags": ["Administrasi - Invoice"],
+                "parameters": [
+                    {
+                        "in":"query",
+                        "name":"code",
+                        "required": true,
+                        "type": "string",
+                        "description": "Nomor invoice"
+                    }
+                ],
+                "security": [
+                    {
+                        "bearer":[]
+                    }
+                ],
+                "responses": {
+                    "200":{
+                        "description": "OK"
+                    },
+                    "401":{
+                        "description": "Unauthorized, access token invalid"
+                    }
+                }
             }
         },
         "/administrasi/invoice/{id}/send":{

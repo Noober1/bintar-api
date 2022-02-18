@@ -5,11 +5,17 @@ const path = require('path')
 const pagination = require("../../../../lib/pagination");
 const httpStatus = require("http-status");
 
+const MAX_INSTALMENT = process.env.MAX_CICILAN || 6
 const STUDENT_DB = 'administrasi_mahasiswa'
 const INVOICE_DB = 'administrasi_invoice'
+const INSTALMENT_DB = 'administrasi_cicilan'
 const CLASS_DB = 'administrasi_kelas_angkatan'
 const PAYMENT_DB = 'administrasi_pembayaran'
 const USER_DB = 'dbusers'
+
+const _getPaymentHistory = code => {
+    return db(INSTALMENT_DB).where(INSTALMENT_DB + '.invoice', code)
+}
 
 const getInvoice = async(req,res,next) => {
     try {
@@ -119,7 +125,37 @@ const getInvoiceByQueryCode = async(req,res,next) => {
             })
         }
 
+        getData.cicilan = await _getPaymentHistory(code)
+
         return res.json(dataMapping.invoiceDetail(getData))
+    } catch (error) {
+        next(error)
+    }
+}
+
+const deleteInvoiceById = async(req,res,next) => {
+    const { body } = req
+    try {
+        if (!Array.isArray(body.ids)) {
+            throw new sendError({
+                status:httpStatus.BAD_REQUEST,
+                message: 'Data given invalid',
+                code: 'ERR_DATA_INVALID'
+            })
+        }
+
+        const deleting = await db(INVOICE_DB)
+            .whereIn('id', body.ids)
+            .where('status', 'unpaid')
+            .del()
+
+        return res.json({
+            success:true,
+            result: {
+                deleted:deleting,
+                from:body.ids.length
+            }
+        })
     } catch (error) {
         next(error)
     }
@@ -127,7 +163,7 @@ const getInvoiceByQueryCode = async(req,res,next) => {
 
 const patchInvoiceByQueryCode = async(req,res,next) => {
     const { code } = req.query
-    const { status, paymentMethod } = req.body
+    const { paymentMethod, nominal, payer, invalid, transactionDate } = req.body
     try {
         // if invoice code doesn't received from query
         if (!code) {
@@ -140,6 +176,30 @@ const patchInvoiceByQueryCode = async(req,res,next) => {
 
         // get invoice data with code
         const getDataByQueryCode = await db(INVOICE_DB)
+            .select([
+                INVOICE_DB + '.id',
+                INVOICE_DB + '.code',
+                INVOICE_DB + '.mahasiswa',
+                INVOICE_DB + '.id',
+                INVOICE_DB + '.status',
+                INVOICE_DB + '.no_rekening',
+                INVOICE_DB + '.pembayar',
+                INVOICE_DB + '.pembayaran',
+                INVOICE_DB + '.tujuan_rekening',
+                INVOICE_DB + '.tanggal_invoice',
+                INVOICE_DB + '.tanggal_transaksi',
+                INVOICE_DB + '.tanggal_verifikasi',
+                INVOICE_DB + '.nomor_ref',
+                INVOICE_DB + '.gambar',
+                STUDENT_DB + '.email as siswa_email',
+                PAYMENT_DB + '.nominal as nominal' 
+            ])
+            .innerJoin(STUDENT_DB,function () {
+                this.on(STUDENT_DB + '.id','=',INVOICE_DB + '.mahasiswa')
+            })
+            .innerJoin(PAYMENT_DB,function () {
+                this.on(PAYMENT_DB + '.id','=',INVOICE_DB + '.pembayaran')
+            })
             .where(INVOICE_DB + '.code', code)
             .first()
 
@@ -149,18 +209,76 @@ const patchInvoiceByQueryCode = async(req,res,next) => {
                 message: "Data not found",
                 code: "ERR_DATA_NOT_FOUND"
             })
+        } else if(
+            getDataByQueryCode.status == 'paid' ||
+            (
+                (getDataByQueryCode.status == 'unpaid' || getDataByQueryCode.status == 'pending' || getDataByQueryCode.status == 'invalid') && paymentMethod == 'transfer'
+            )
+        ) {
+            throw new sendError({
+                status: httpStatus.FORBIDDEN,
+                message: 'Cannot verify / add transaction'
+            })
+        }
+
+        // get payment history
+        const getPaymentHistory = await _getPaymentHistory(code)
+
+        if (getPaymentHistory.length >= MAX_INSTALMENT) {
+            throw new sendError({
+                status:httpStatus.FORBIDDEN,
+                message: "Max instalment reached",
+                code: "ERR_MAX_INSTALMENT_REACHED"
+            })
+        }
+
+        // summarize payment history
+        const sumPaymentHistory = getPaymentHistory.reduce((value, item) => value + item.nominal, 0)
+        // if payment history summarize result is greater than requirement
+        if (sumPaymentHistory > getDataByQueryCode.pembayaran_nominal) {
+            throw new sendError({
+                status: httpStatus.FORBIDDEN,
+                message: "Status paid, cannot add any transaction anymore",
+                code: "ERR_INVOICE_HAS_PAID"
+            })
+        }
+
+        // return res.json(getDataByQueryCode)
+
+        const currentDate = new Date()
+
+        if (!invalid) {
+            const insertingPaymentHistory = await db(INSTALMENT_DB)
+                .insert({
+                    invoice: code,
+                    admin: req.auth.email,
+                    mahasiswa: getDataByQueryCode.siswa_email,
+                    pembayar: payer || getDataByQueryCode.pembayar,
+                    nominal: nominal || getDataByQueryCode.nominal,
+                    metode_pembayaran: paymentMethod == 'manual' ? 'manual' : 'transfer',
+                    tanggal_transaksi: paymentMethod == 'manual' ? currentDate : transactionDate ,
+                    tanggal_verifikasi: currentDate
+                })
         }
 
         const updating = await db(INVOICE_DB).where(INVOICE_DB + '.code', code).update({
-            status:status || 'paid',
+            status: sumPaymentHistory >= getDataByQueryCode.nominal ? 'paid' : sumPaymentHistory < getDataByQueryCode.nominal ? 'pending' : invalid ? 'invalid' : 'unpaid',
             jenis_pembayaran: paymentMethod || 'transfer',
             tanggal_verifikasi: new Date()
         })
 
         return res.json({
             success:true,
-            data:updating
+            result:{
+                paymentHistory: typeof insertingPaymentHistory !== 'undefined' ? insertingPaymentHistory : null,
+                invoice: updating
+            }
         })
+
+        // return res.json({
+        //     success:true,
+        //     data:updating
+        // })
     } catch (error) {
         next(error)
     }
@@ -169,5 +287,6 @@ const patchInvoiceByQueryCode = async(req,res,next) => {
 module.exports = {
     getInvoice,
     getInvoiceByQueryCode,
+    deleteInvoiceById,
     patchInvoiceByQueryCode
 }

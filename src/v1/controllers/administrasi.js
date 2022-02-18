@@ -82,6 +82,11 @@ router
         checkPageAndLimit,
         administrasi.invoice.getInvoice
     )
+    .delete(
+        withAuthToken,
+        _allowAdmin,
+        administrasi.invoice.deleteInvoiceById
+    )
 
 router
     .route('/getInvoice')

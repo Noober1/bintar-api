@@ -1,3 +1,15 @@
+const _instalment = item => ({
+    invoice: item.invoice,
+    admin: item.admin,
+    payer: item.pembayar,
+    nominal: item.nominal,
+    paymentMethod: item.metode_pembayaran,
+    date: {
+        transaction: item.tanggal_transaksi,
+        verification: item.tanggal_verifikasi
+    }
+})
+
 module.exports = {
     user: item => ({
         id:item.id,
@@ -114,11 +126,13 @@ module.exports = {
                 email: item.pembayaran_admin_email
             }
         },
+        paymentHistory: item.cicilan.map(_instalment),
         status: item.status,
         paymentMethod: item.jenis_pembayaran,
         accountNumber: item.no_rekening,
         sender: item.pembayar,
         destinationAccount: item.tujuan_rekening,
+        maxInstalment: parseInt(process.env.MAX_CICILAN) || 6,
         date: {
             invoice: item.tanggal_invoice,
             transaction: item.tanggal_transaksi,
@@ -127,6 +141,7 @@ module.exports = {
         refNumber: item.nomor_ref,
         picture: item.gambar
     }),
+    instalment: _instalment,
     bankAccount:item => ({
         id: item.id,
         code: item.kode_bank,

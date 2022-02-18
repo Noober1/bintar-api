@@ -275,5 +275,19 @@ module.exports = {
                 .isString().withMessage(msg.isString)
                 .isLength({max:15}).withMessage(msg.isLength(1,15)),
         ]
+    },
+    validatePayment: () => {
+        return [
+            body('paymentMethod')
+                .not().isEmpty().withMessage(msg.isNotEmpty)
+                .isIn(['manual','transfer']).withMessage(msg.isIn(['manual','transfer'])),
+            body('nominal')
+                .isLength({max:999999999}).withMessage(msg.isLength(1,999999999)),
+            body('payer')
+                .isString().withMessage(msg.isString)
+                .isLength({max:100}).withMessage(msg.isLength(1,100)),
+            body('invalid')
+                .isBoolean().withMessage(msg.isBoolean)
+        ]
     }
 }

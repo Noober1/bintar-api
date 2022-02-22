@@ -1,4 +1,7 @@
+const _sumPaymentHistory = array => array.reduce((value, i) => value + i.nominal, 0)
+
 const _instalment = item => ({
+    id: item.id,
     invoice: item.invoice,
     admin: item.admin,
     payer: item.pembayar,
@@ -127,6 +130,8 @@ module.exports = {
             }
         },
         paymentHistory: item.cicilan.map(_instalment),
+        totalPaymentHistory: _sumPaymentHistory(item.cicilan),
+        remainingPaymentHistory: item.pembayaran_nominal - _sumPaymentHistory(item.cicilan),
         status: item.status,
         paymentMethod: item.jenis_pembayaran,
         accountNumber: item.no_rekening,

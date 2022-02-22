@@ -235,14 +235,24 @@ const patchInvoiceByQueryCode = async(req,res,next) => {
         // summarize payment history
         const sumPaymentHistory = getPaymentHistory.reduce((value, item) => value + item.nominal, 0)
         // if payment history summarize result is greater than requirement
-        if (sumPaymentHistory > getDataByQueryCode.pembayaran_nominal) {
+        if (sumPaymentHistory > getDataByQueryCode.nominal) {
             throw new sendError({
                 status: httpStatus.FORBIDDEN,
                 message: "Status paid, cannot add any transaction anymore",
                 code: "ERR_INVOICE_HAS_PAID"
             })
         }
-
+        // summarize from payment history and from data request
+        const sumCurrentPaymentHistory = sumPaymentHistory + (nominal ? parseInt(nominal) : getDataByQueryCode.nominal)
+        // if total payment history(including summarize current payment history), throw error
+        console.log(sumCurrentPaymentHistory, getDataByQueryCode.nominal)
+        if (sumCurrentPaymentHistory > getDataByQueryCode.nominal) {
+            throw new sendError({
+                status: httpStatus.FORBIDDEN,
+                message: "Nominal value offset",
+                code: "ERR_VERIVY_NOMINAL_OFFSET"
+            })
+        }
         // return res.json(getDataByQueryCode)
 
         const currentDate = new Date()
@@ -262,7 +272,7 @@ const patchInvoiceByQueryCode = async(req,res,next) => {
         }
 
         const updating = await db(INVOICE_DB).where(INVOICE_DB + '.code', code).update({
-            status: sumPaymentHistory >= getDataByQueryCode.nominal ? 'paid' : sumPaymentHistory < getDataByQueryCode.nominal ? 'pending' : invalid ? 'invalid' : 'unpaid',
+            status: sumCurrentPaymentHistory >= getDataByQueryCode.nominal ? 'paid' : sumCurrentPaymentHistory < getDataByQueryCode.nominal ? 'pending' : invalid ? 'invalid' : 'unpaid',
             jenis_pembayaran: paymentMethod || 'transfer',
             tanggal_verifikasi: new Date()
         })

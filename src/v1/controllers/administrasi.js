@@ -16,15 +16,10 @@ const _allowAdmin = (req,res,next) => {
 
 router
     .route('/')
-    .get((req,res,next) =>{
-        try {
-            return res.json({
-                page:'administration'
-            })
-        } catch (error) {
-            next(error)
-        }
-    })
+    .get(
+        withAuthToken,
+        administrasi.statistic.getDashboardStatistic
+    )
 
 router
     .route('/payment')

@@ -15,7 +15,6 @@ const whitelist = [
     'image/jpg',
     'image/webp'
 ]
-
 const fileFilter = (req, file, cb) => {
     if (!whitelist.includes(file.mimetype)) {
         return cb(new sendError({

@@ -1,21 +1,12 @@
-const config = require('./config')
-const inventaris = require('./inventaris')
-const administrasi = require('./administrasi')
-const utils = require('./inventaris/utils')
-const media = require('./media')
-const user = require('./user')
-const student = require('./student')
-const classAngkatan = require('./class')
-const prodi = require('./prodi')
-
 module.exports = {
-    config,
-    user,
-    student,
-    classAngkatan,
-    inventaris,
-    administrasi,
-    utils,
-    media,
-    prodi,
+    config: require('./config'),
+    inventaris: require('./inventaris'),
+    administrasi: require('./administrasi'),
+    utils: require('./inventaris/utils'),
+    media: require('./media'),
+    user: require('./user'),
+    student: require('./student'),
+    classAngkatan: require('./class'),
+    prodi: require('./prodi'),
+    template: require('./template')
 }

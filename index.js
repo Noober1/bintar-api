@@ -90,8 +90,9 @@ module.exports = function main (options, cb) {
 			logger.error(err)
 		}
 		res.status(err.status || 500).json({
-			code: err.code || 'InternalServerError',
-			message: err.message
+			code: err.code || 'ERR_INTERNAL_SERVER',
+			message: err.message,
+			data: err.data || undefined
 		})
 	})
 

@@ -7,6 +7,7 @@ const user = require('./user')
 const classAngkatan = require('./class')
 const student = require('./student')
 const prodi = require('./prodi')
+const template = require('./template')
 
 module.exports = {
     auth,
@@ -17,5 +18,6 @@ module.exports = {
     administrasi,
     classAngkatan,
     media,
-    prodi
+    prodi,
+    template
 }

@@ -11,7 +11,8 @@ const {
 	administrasi,
 	student,
 	classAngkatan,
-	prodi
+	prodi,
+	template
 } = require('./controllers')
 
 router.get('/', (req,res) => {
@@ -46,5 +47,8 @@ router.use('/administrasi', administrasi)
 
 //controller untuk media
 router.use('/media', media)
+
+// controller untup upload(template upload?)
+router.use('/template', template)
 
 module.exports = router

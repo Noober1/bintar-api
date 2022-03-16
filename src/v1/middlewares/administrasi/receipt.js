@@ -4,11 +4,10 @@ const db = require('../../../../lib/db');
 const pagination = require("../../../../lib/pagination");
 const httpStatus = require("http-status");
 const { getMediaByFileName } = require("../../utils/getMedia");
+const { INVOICE_DB, ACCOUNT_DB } = require("../../constants");
+const modules = {}
 
-const INVOICE_DB = 'administrasi_invoice'
-const ACCOUNT_DB = 'administrasi_rekening'
-
-const postSendReceipt = async(req,res,next) => {
+modules.postSendReceipt = async(req,res,next) => {
     const { id } = req.params
     const { picture, destinationAccount, transactionDate, accountNumber, sender, refNumber } = req.body
     try {
@@ -74,6 +73,4 @@ const postSendReceipt = async(req,res,next) => {
     }
 }
 
-module.exports = {
-    postSendReceipt
-}
+module.exports = modules

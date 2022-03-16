@@ -1,8 +1,8 @@
-function sendError({status = 500, code = 'UNKNOWN', message = 'No Message', data = {}}) {
+function sendError({status = 500, code = 'UNKNOWN', message = 'No Message', data }) {
     const error = new Error(message);
     error.code = code
     error.status = status
-    error.data = data
+    error.data = data || undefined
     return error
 }
 

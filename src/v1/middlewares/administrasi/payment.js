@@ -4,12 +4,8 @@ const rootDir = require("../../../../lib/rootDir");
 const path = require('path')
 const pagination = require("../../../../lib/pagination");
 const httpStatus = require("http-status");
+const { PAYMENT_DB, INVOICE_DB, USER_DB, STUDENT_DB, CLASS_DB } = require("../../constants")
 
-const PAYMENT_DB = 'administrasi_pembayaran'
-const USER_DB = 'dbusers'
-const INVOICE_DB = 'administrasi_invoice'
-const STUDENT_DB = 'administrasi_mahasiswa'
-const CLASS_DB = 'administrasi_kelas_angkatan'
 const PAYMENT_SELECT = [
     PAYMENT_DB + '.id',
     PAYMENT_DB + '.tanggal',
@@ -95,7 +91,10 @@ const deletePayment = async(req,res,next) => {
         
         return res.json({
             success:true,
-            result: deleting
+            result: {
+                deleted:deleting,
+                from:body.ids.length
+            }
         })
     } catch (error) {
         next(error)

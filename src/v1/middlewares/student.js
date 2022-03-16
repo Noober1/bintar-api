@@ -2,29 +2,27 @@ const httpStatus = require('http-status');
 const db = require('../../../lib/db');
 const pagination = require('../../../lib/pagination');
 const { dataMapping, sendError, createPassword } = require('../utils')
-const constants = require('../constants')
-
-const STUDENT_DB = 'administrasi_mahasiswa'
+const constants = require('../constants');
+const { STUDENT_DB, CLASS_DB, PRODI_DB } = require('../constants');
+const modules = {}
 
 const _getUserByEmail = email => db('dbusers')
     .where({email})
     .first()
 
-const _getClassById = id => db('administrasi_kelas_angkatan')
+const _getClassById = id => db(CLASS_DB + '')
     .where('id', id)
 
-const _getProdiById = id => db('administrasi_prodi')
+const _getProdiById = id => db(PRODI_DB + '')
     .where('id', id)
-
-
 
 const _studentQuery = () => {
     return db(STUDENT_DB)
-    .innerJoin('administrasi_kelas_angkatan',function () {
-        this.on('administrasi_kelas_angkatan.id','=',STUDENT_DB + '.kelas')
+    .innerJoin(CLASS_DB + '',function () {
+        this.on(CLASS_DB + '.id','=',STUDENT_DB + '.kelas')
     })
-    .innerJoin('administrasi_prodi',function () {
-        this.on('administrasi_prodi.id','=',STUDENT_DB + '.prodi')
+    .innerJoin(PRODI_DB + '',function () {
+        this.on(PRODI_DB + '.id','=',STUDENT_DB + '.prodi')
     })
     .select([
         STUDENT_DB + '.id',
@@ -35,17 +33,18 @@ const _studentQuery = () => {
         STUDENT_DB + '.status',
         STUDENT_DB + '.jenis',
         STUDENT_DB + '.tahun_masuk',
-        'administrasi_kelas_angkatan.id as kelas_id',
-        'administrasi_kelas_angkatan.nama as kelas_nama',
-        'administrasi_kelas_angkatan.semester as kelas_semester',
-        'administrasi_kelas_angkatan.angkatan as kelas_angkatan',
-        'administrasi_prodi.id as prodi_id',
-        'administrasi_prodi.kode as prodi_kode',
-        'administrasi_prodi.nama as prodi_nama'
+        CLASS_DB + '.id as kelas_id',
+        CLASS_DB + '.kode as kelas_kode',
+        CLASS_DB + '.nama as kelas_nama',
+        CLASS_DB + '.semester as kelas_semester',
+        CLASS_DB + '.angkatan as kelas_angkatan',
+        PRODI_DB + '.id as prodi_id',
+        PRODI_DB + '.kode as prodi_kode',
+        PRODI_DB + '.nama as prodi_nama'
     ])
 }
 
-const getStudent = async(req,res,next) => {
+modules.getStudent = async(req,res,next) => {
     try {
         const getStudent = await _studentQuery()
         .paginate(pagination(req.page,req.limit))
@@ -58,7 +57,7 @@ const getStudent = async(req,res,next) => {
     }
 }
 
-const getStudentById = async(req,res,next) => {
+modules.getStudentById = async(req,res,next) => {
     try {
         const getStudent = await _studentQuery().where({
             [STUDENT_DB + '.id']: req.params.id
@@ -71,7 +70,7 @@ const getStudentById = async(req,res,next) => {
     }
 }
 
-const getStudentByNIS = async(req,res,next) => {
+modules.getStudentByNIS = async(req,res,next) => {
     try {
         return res.send('still developing')
     } catch (error) {
@@ -79,7 +78,7 @@ const getStudentByNIS = async(req,res,next) => {
     }
 }
 
-const postStudent = async(req,res,next) => {
+modules.postStudent = async(req,res,next) => {
     const { email, class:classId, angkatan, prodi } = req.body
     const { body } = req
     try {
@@ -148,7 +147,7 @@ const postStudent = async(req,res,next) => {
     }
 }
 
-const deleteStudent = async(req,res,next) => {
+modules.deleteStudent = async(req,res,next) => {
     const { body } = req
     try {
         if (!Array.isArray(body.ids)) {
@@ -166,14 +165,17 @@ const deleteStudent = async(req,res,next) => {
 
         return res.json({
             success:true,
-            result: deleting
+            result: {
+                deleted:deleting,
+                from:body.ids.length
+            }
         })
     } catch (error) {
         next(error)
     }
 }
 
-const updateStudent = async(req,res,next) => {
+modules.updateStudent = async(req,res,next) => {
     const where = {
         id: req.params.id
     }
@@ -245,11 +247,4 @@ const updateStudent = async(req,res,next) => {
     }
 }
 
-module.exports = {
-    getStudent,
-    getStudentByNIS,
-    postStudent,
-    deleteStudent,
-    getStudentById,
-    updateStudent
-}
+module.exports = modules

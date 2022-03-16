@@ -4,20 +4,15 @@ const rootDir = require("../../../../lib/rootDir");
 const path = require('path')
 const pagination = require("../../../../lib/pagination");
 const httpStatus = require("http-status");
-
+const { INVOICE_DB, STUDENT_DB, INSTALMENT_DB, CLASS_DB, PAYMENT_DB, USER_DB } = require('../../constants')
 const MAX_INSTALMENT = process.env.MAX_CICILAN || 6
-const STUDENT_DB = 'administrasi_mahasiswa'
-const INVOICE_DB = 'administrasi_invoice'
-const INSTALMENT_DB = 'administrasi_cicilan'
-const CLASS_DB = 'administrasi_kelas_angkatan'
-const PAYMENT_DB = 'administrasi_pembayaran'
-const USER_DB = 'dbusers'
 
 const _getPaymentHistory = code => {
-    return db(INSTALMENT_DB).where(INSTALMENT_DB + '.invoice', code)
+    return db(INSTALMENT_DB).where(INSTALMENT_DB + '.invoice', code).orderBy(INSTALMENT_DB + '.tanggal_transaksi','DESC')
 }
 
 const getInvoice = async(req,res,next) => {
+    var { search:searchInvoice } = req.query
     try {
         let queryGetData = db(INVOICE_DB)
         .select([
@@ -47,9 +42,46 @@ const getInvoice = async(req,res,next) => {
         .innerJoin(CLASS_DB, function () {
             this.on(STUDENT_DB + '.kelas','=',CLASS_DB + '.id')
         })
+        .orderBy(INVOICE_DB + '.tanggal_invoice', 'DESC')
 
         if (req.auth.accountType == 'student') {
             queryGetData = queryGetData.where(STUDENT_DB + '.email', req.auth.email)
+        }
+
+        if (searchInvoice) {
+            let searchByStatus = '';
+            switch (searchInvoice) {
+                case 'lunas':
+                case 'paid':
+                    searchByStatus = 'paid'
+                    break;
+                case 'pending':
+                    searchByStatus = 'pending'
+                    break;
+                case 'confirming':
+                case 'verification':
+                case 'verifikasi':
+                    searchByStatus = 'confirming'
+                    break;
+                case 'verifikasi':
+                    searchByStatus = 'confirming'
+                    break;
+                case 'invalid':
+                    searchByStatus = 'invalid'
+                    break;
+                case 'belum lunas':
+                case 'unpaid':
+                    searchByStatus = 'unpaid'
+                    break;
+            }
+            queryGetData = queryGetData
+                .where(INVOICE_DB + '.code','like', `%${searchInvoice}%`)
+                .orWhere(STUDENT_DB + '.nama_depan','like',`%${searchInvoice}%`)
+                .orWhere(STUDENT_DB + '.nama_belakang','like',`%${searchInvoice}%`)
+
+            if (searchByStatus !== '') {
+                queryGetData = queryGetData.orWhere(INVOICE_DB + '.status', searchByStatus)
+            }
         }
 
         const getData = await queryGetData.paginate(pagination(req.page,req.limit))
@@ -245,7 +277,6 @@ const patchInvoiceByQueryCode = async(req,res,next) => {
         // summarize from payment history and from data request
         const sumCurrentPaymentHistory = sumPaymentHistory + (nominal ? parseInt(nominal) : getDataByQueryCode.nominal)
         // if total payment history(including summarize current payment history), throw error
-        console.log(sumCurrentPaymentHistory, getDataByQueryCode.nominal)
         if (sumCurrentPaymentHistory > getDataByQueryCode.nominal) {
             throw new sendError({
                 status: httpStatus.FORBIDDEN,
@@ -254,7 +285,6 @@ const patchInvoiceByQueryCode = async(req,res,next) => {
             })
         }
         // return res.json(getDataByQueryCode)
-
         const currentDate = new Date()
 
         if (!invalid) {
@@ -274,7 +304,8 @@ const patchInvoiceByQueryCode = async(req,res,next) => {
         const updating = await db(INVOICE_DB).where(INVOICE_DB + '.code', code).update({
             status: sumCurrentPaymentHistory >= getDataByQueryCode.nominal ? 'paid' : sumCurrentPaymentHistory < getDataByQueryCode.nominal ? 'pending' : invalid ? 'invalid' : 'unpaid',
             jenis_pembayaran: paymentMethod || 'transfer',
-            tanggal_verifikasi: new Date()
+            tanggal_verifikasi: currentDate,
+            tanggal_transaksi: currentDate
         })
 
         return res.json({

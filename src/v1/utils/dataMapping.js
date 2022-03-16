@@ -52,6 +52,7 @@ module.exports = {
         registerYear: item.tahun_masuk,
         class: {
             id: item.kelas_id,
+            code: item.kelas_kode,
             name: item.kelas_nama,
             semester: item.semester,
             angkatan: item.kelas_angkatan

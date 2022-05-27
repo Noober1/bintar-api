@@ -155,5 +155,33 @@ module.exports = {
         name: item.nama_bank,
         alias: item.nama_alias,
         owner: item.nama_pemilik
+    }),
+    // exporting
+    adminByStudent: item => ({
+        id: item.id,
+        code: item.code,
+        refNumber: item.no_ref,
+        payment: {
+            date: item.pembayaran_tanggal,
+            description: item.pembayaran_deskripsi,
+            admin: {
+                firstName: item.admin_nama_depan,
+                firstName: item.admin_nama_belakang,
+                email: item.admin_email
+            }
+        },
+        type: item.jenis,
+        nominal: item.nominal,
+        status: item.status,
+        paymentMethod: item.jenis_pembayaran,
+        accountNumber: item.no_rekening,
+        payer: item.pembayar,
+        destinationAccount: item.tujuan_rekening,
+        date: {
+            invoice: item.tanggal_invoice,
+            transaction: item.tanggal_transaksi,
+            verification: item.tanggal_verifikasi
+        },
+        picture: item.picture
     })
 }

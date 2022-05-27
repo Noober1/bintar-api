@@ -8,6 +8,7 @@ const student = require("./student");
 const prodi = require("./prodi");
 const template = require("./template");
 const exporting = require("./export");
+const ppdb = require("./ppdb");
 
 module.exports = {
   auth,
@@ -20,4 +21,5 @@ module.exports = {
   prodi,
   template,
   exporting,
+  ppdb,
 };

@@ -13,6 +13,7 @@ const {
   prodi,
   template,
   exporting,
+  ppdb,
 } = require("./controllers");
 
 router.get("/", (req, res) => {
@@ -50,5 +51,8 @@ router.use("/template", template);
 
 // controller untup export
 router.use("/export", exporting);
+
+// controller untup PPDB
+router.use("/ppdb", ppdb);
 
 module.exports = router;

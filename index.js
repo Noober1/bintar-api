@@ -9,10 +9,10 @@ const cors = require('cors')
 const db = require('./lib/db')
 const helmet = require('helmet')
 
-module.exports = function main (options, cb) {
+module.exports = function main(options, cb) {
 
 	// Set default options
-	const ready = cb || function () {}
+	const ready = cb || function () { }
 	const opts = Object.assign({
 		// Default options
 	}, options)
@@ -25,7 +25,7 @@ module.exports = function main (options, cb) {
 	let serverClosing = false
 
 	// Setup error handling
-	function unhandledError (err) {
+	function unhandledError(err) {
 		// Log the errors
 		logger.error(err)
 
@@ -48,8 +48,8 @@ module.exports = function main (options, cb) {
 	// Create the express app
 	const app = express()
 
-	// Common middleware
-	app.use((req,res,next) => {
+	// Other middleware and confiruration
+	app.use((req, res, next) => {
 		req.fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl
 		next()
 	})
@@ -71,7 +71,7 @@ module.exports = function main (options, cb) {
 	}));
 
 	app.use(pinoHttp({ logger }))
-		
+
 	// Register routes
 	// @NOTE: require here because this ensures that even syntax errors
 	// or other startup related errors are caught logged and debuggable.
@@ -81,7 +81,7 @@ module.exports = function main (options, cb) {
 	require('./routes')(app, opts)
 
 	// Common error handlers
-	app.use(function fourOhFourHandler (req, res, next) {
+	app.use(function fourOhFourHandler(req, res, next) {
 		next(httpErrors(404, `Route not found: ${req.url}`))
 	})
 
@@ -97,14 +97,14 @@ module.exports = function main (options, cb) {
 	})
 
 	// function for checking database connection
-	const checkDbConnection = async() => {
+	const checkDbConnection = async () => {
 		try {
 			await db('dbid')
 			return false;
 		} catch (error) {
 			return {
-				message:'Database connection error, make sure to check database configuration from .env file',
-				code:error.code
+				message: 'Database connection error, make sure to check database configuration from .env file',
+				code: error.code
 			}
 		}
 	}

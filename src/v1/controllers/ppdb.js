@@ -1,10 +1,15 @@
 const express = require("express");
 const router = express.Router();
-const { sendError } = require("../utils");
+const { sendError, checkPageAndLimit } = require("../utils");
 const db = require("../../../lib/db");
 const httpStatus = require("http-status");
 const jwt = require("jsonwebtoken");
 const { withAuthToken } = require("../utils/useJWT");
+const pagination = require("../../../lib/pagination");
+const getRecaptcha = require("../../../lib/recaptcha");
+const axios = require("axios");
+
+const recaptcha = getRecaptcha()
 
 router.route("/login").post(async (req, res, next) => {
   try {
@@ -48,6 +53,7 @@ router.route("/login").post(async (req, res, next) => {
   }
 });
 
+// profile route
 router.route("/profile").get(withAuthToken, async (req, res, next) => {
   try {
     console.log(req.auth);
@@ -65,5 +71,65 @@ router.route("/profile").get(withAuthToken, async (req, res, next) => {
     next(error);
   }
 });
+
+// get sekolah
+
+router
+  .route("/sekolah")
+  .get(
+    async (req, res, next) => {
+      try {
+        const getSekolah = await db("dbsekolah").where('nama_sekolah', 'like', `%${req.query.search || ''}%`)
+        return res.json(getSekolah)
+      } catch (error) {
+        next(error)
+      }
+    })
+
+router
+  .route("/jurusan")
+  .get(async (req, res, next) => {
+    try {
+      const getJurusan = await db("dbjurusan").where('dbjurusan', 'like', `%${req.query.search || ''}%`)
+      return res.json(getJurusan)
+    } catch (error) {
+      next(error)
+    }
+  })
+
+router
+  .route('/register')
+  .get(recaptcha.middleware.render, async (req, res, next) => {
+    try {
+      return res.json(res.recaptcha)
+    } catch (error) {
+      next(error)
+    }
+  })
+  .post(async (req, res, next) => {
+    try {
+      const fetch = await axios.post(
+        `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.RECAPTCHA_SECRET_KEY}&response=${req.body.captchaToken}`,
+        {},
+        {
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded; charset=utf-8"
+          },
+        },
+      );
+      if (!fetch.data.success) {
+        throw new sendError({
+          status: httpStatus.FORBIDDEN,
+          message: "Captcha invalid",
+          code: "ERR_CAPTCHA_INVALID",
+        })
+      }
+
+      // TODO: register execution script need to be here
+      res.json({ success: true })
+    } catch (error) {
+      next(error)
+    }
+  })
 
 module.exports = router;

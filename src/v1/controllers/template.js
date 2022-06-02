@@ -22,12 +22,12 @@ const whitelist = [
 const fileFilter = (req, file, cb) => {
     if (!whitelist.includes(file.mimetype)) {
         return cb(new sendError({
-            status:400,
+            status: 400,
             code: 'FILE_NOT_ALLOWED',
             message: 'File format not allowed'
         }))
     }
-    return cb(null,true)
+    return cb(null, true)
 }
 
 const _uploadMiddleware = multer({
@@ -35,7 +35,7 @@ const _uploadMiddleware = multer({
     storage: multer.memoryStorage()
 })
 
-const _fileChecking = (req,res,next) => {
+const _fileChecking = (req, res, next) => {
     try {
         if (typeof req.file == 'undefined') {
             throw new sendError({
@@ -53,6 +53,7 @@ const _fileChecking = (req,res,next) => {
 router.use(
     // apply upload middleware
     _uploadMiddleware.single('file'),
+    withAuthToken,
     onlyAdmin,
     // check if file is exist
     _fileChecking

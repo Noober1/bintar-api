@@ -15,16 +15,16 @@ const _instalment = item => ({
 
 module.exports = {
     user: item => ({
-        id:item.id,
-        firstName:item.nama_depan,
-        lastName:item.nama_belakang,
+        id: item.id,
+        firstName: item.nama_depan,
+        lastName: item.nama_belakang,
         fullName: (item.nama_depan + ' ' + item.nama_belakang).toLowerCase(),
-        email:item.email,
-        level:item.level,
-        status:item.status_user,
-        permission:JSON.parse(item.hak_akses) || [],
-        lastLogin:item.last_login,
-        lastLogout:item.last_logout
+        email: item.email,
+        level: item.level,
+        status: item.status_user,
+        permission: JSON.parse(item.hak_akses) || [],
+        lastLogin: item.last_login,
+        lastLogout: item.last_logout
     }),
     /* structure for mahasiswa
     {
@@ -65,6 +65,7 @@ module.exports = {
     }),
     kelas: item => ({
         id: item.id,
+        code: item.kode,
         name: item.nama,
         semester: item.semester,
         angkatan: item.angkatan,
@@ -111,7 +112,7 @@ module.exports = {
         refNumber: item.nomor_ref,
         picture: item.gambar
     }),
-    invoiceDetail:item => ({
+    invoiceDetail: item => ({
         id: item.id,
         code: item.code,
         student: {
@@ -148,7 +149,7 @@ module.exports = {
         picture: item.gambar
     }),
     instalment: _instalment,
-    bankAccount:item => ({
+    bankAccount: item => ({
         id: item.id,
         code: item.kode_bank,
         number: item.no_rekening,

@@ -18,15 +18,15 @@ const PAYMENT_SELECT = [
     USER_DB + '.email as admin_email',
 ]
 
-const getPayment = async(req,res,next) => {
+const getPayment = async (req, res, next) => {
     try {
         const getData = await db(PAYMENT_DB)
             .innerJoin(USER_DB, function () {
-                this.on(PAYMENT_DB + '.admin','=',USER_DB + '.email')
+                this.on(PAYMENT_DB + '.admin', '=', USER_DB + '.email')
             })
             .select(PAYMENT_SELECT)
             .orderBy('tanggal', 'desc')
-            .paginate(pagination(req.page,req.limit))
+            .paginate(pagination(req.page, req.limit))
         getData.data = getData.data.map(dataMapping.payment)
 
         return res.json(getData)
@@ -35,13 +35,13 @@ const getPayment = async(req,res,next) => {
     }
 }
 
-const postPayment = async(req,res,next) => {
+const postPayment = async (req, res, next) => {
     const { admin, type, description, price } = req.body
     try {
         const getUser = await db(USER_DB).where('email', admin).first()
         if (!getUser) {
             throw new sendError({
-                status:400,
+                status: 400,
                 message: 'Administrator with email given not found',
                 code: 'ERR_ADMIN_NOT_FOUND'
             })
@@ -54,23 +54,23 @@ const postPayment = async(req,res,next) => {
             nominal: price,
             deskripsi: description
         })
-        
+
         return res.json({
-            success:true,
-            result:inserting
+            success: true,
+            result: inserting
         })
     } catch (error) {
         next(error)
     }
 }
 
-const deletePayment = async(req,res,next) => {
+const deletePayment = async (req, res, next) => {
     const { ids } = req.body
 
     try {
         if (!Array.isArray(ids)) {
             throw new sendError({
-                status:400,
+                status: 400,
                 message: 'Data given invalid',
                 code: 'ERR_DATA_INVALID'
             })
@@ -81,19 +81,19 @@ const deletePayment = async(req,res,next) => {
         const getInvoiceByPaymentId = await db(INVOICE_DB).select('id').where('pembayaran', id).first()
         if (getInvoiceByPaymentId) {
             throw new sendError({
-                status:httpStatus.BAD_REQUEST,
+                status: httpStatus.BAD_REQUEST,
                 message: "Data cannot be deleted because there is an invoice(s)",
-                code:"ERR_PAYMENT_HAVE_INVOICE"
+                code: "ERR_PAYMENT_HAVE_INVOICE"
             })
         }
 
         const deleting = await db(PAYMENT_DB).where('id', id).del()
-        
+
         return res.json({
-            success:true,
+            success: true,
             result: {
-                deleted:deleting,
-                from:body.ids.length
+                deleted: deleting,
+                from: ids.length
             }
         })
     } catch (error) {
@@ -101,7 +101,7 @@ const deletePayment = async(req,res,next) => {
     }
 }
 
-const updatePaymentById = async(req,res,next) => {
+const updatePaymentById = async (req, res, next) => {
     const { type, description } = req.body
     try {
         const updating = await db(PAYMENT_DB).where('id', req.params.id).update({
@@ -110,7 +110,7 @@ const updatePaymentById = async(req,res,next) => {
         })
 
         return res.json({
-            success:true,
+            success: true,
             result: updating
         })
     } catch (error) {
@@ -118,32 +118,32 @@ const updatePaymentById = async(req,res,next) => {
     }
 }
 
-const getPaymentById = async(req,res,next) => {
+const getPaymentById = async (req, res, next) => {
     try {
         // const getData = await db(PAYMENT_DB).where('id', req.params.id).first()
         const getData = await db(PAYMENT_DB)
             .where(PAYMENT_DB + '.id', req.params.id)
             .innerJoin(USER_DB, function () {
-                this.on(PAYMENT_DB + '.admin','=',USER_DB + '.email')
+                this.on(PAYMENT_DB + '.admin', '=', USER_DB + '.email')
             })
             .select(PAYMENT_SELECT)
             .first()
 
         if (!getData) {
             throw new sendError({
-                status:httpStatus.BAD_REQUEST,
+                status: httpStatus.BAD_REQUEST,
                 message: "Data not found",
                 code: "ERR_DATA_NOT_FOUND"
             })
         }
-        
+
         return res.json(dataMapping.payment(getData))
     } catch (error) {
         next(error)
     }
 }
 
-const getInvoicesByPaymentId = async(req,res,next) => {
+const getInvoicesByPaymentId = async (req, res, next) => {
     try {
         const getPayment = await db(PAYMENT_DB).where('id', req.params.id).first()
         if (!getPayment) {
@@ -156,10 +156,10 @@ const getInvoicesByPaymentId = async(req,res,next) => {
 
         const getData = await db(INVOICE_DB)
             .innerJoin(STUDENT_DB, function () {
-                this.on(INVOICE_DB + '.mahasiswa','=',STUDENT_DB + '.id')
+                this.on(INVOICE_DB + '.mahasiswa', '=', STUDENT_DB + '.id')
             })
             .innerJoin(CLASS_DB, function () {
-                this.on(STUDENT_DB + '.kelas','=',CLASS_DB + '.id')
+                this.on(STUDENT_DB + '.kelas', '=', CLASS_DB + '.id')
             })
             .select([
                 INVOICE_DB + '.id',
@@ -179,7 +179,7 @@ const getInvoicesByPaymentId = async(req,res,next) => {
                 INVOICE_DB + '.gambar',
             ])
             .where(INVOICE_DB + '.pembayaran', req.params.id)
-            .paginate(pagination(req.page,req.limit))
+            .paginate(pagination(req.page, req.limit))
 
         getData.data = getData.data.map(dataMapping.invoice)
 
@@ -189,12 +189,12 @@ const getInvoicesByPaymentId = async(req,res,next) => {
     }
 }
 
-const postBatchInvoice = async(req,res,next) => {
-    const { class:classIds, prodi, includeBeasiswa } = req.body
+const postBatchInvoice = async (req, res, next) => {
+    const { class: classIds, prodi, includeBeasiswa } = req.body
     try {
         if (!classIds || !prodi) {
             throw new sendError({
-                status:httpStatus.BAD_REQUEST,
+                status: httpStatus.BAD_REQUEST,
                 message: "Some data requirement(s) is missing",
                 code: "ERR_DATA_MISSING"
             })
@@ -202,15 +202,15 @@ const postBatchInvoice = async(req,res,next) => {
 
         if (!Array.isArray(classIds) || !Array.isArray(prodi)) {
             throw new sendError({
-                status:httpStatus.BAD_REQUEST,
+                status: httpStatus.BAD_REQUEST,
                 message: "Data given invalid",
                 code: "ERR_DATA_INVALID"
             })
         }
 
         let queryGetStudent = db(STUDENT_DB)
-            .select('id','NIS','email','status','kelas','tahun_masuk','jenis','prodi')
-            .where('status','aktif')
+            .select('id', 'NIS', 'email', 'status', 'kelas', 'tahun_masuk', 'jenis', 'prodi')
+            .where('status', 'aktif')
             .whereIn('kelas', classIds)
 
         // if prodi isn't empty, add additional query where prodi
@@ -229,7 +229,7 @@ const postBatchInvoice = async(req,res,next) => {
 
         if (getStudentData.length < 1) {
             return res.status(httpStatus.CREATED).json({
-                success:true,
+                success: true,
                 message: "No data to insert",
                 code: "NO_DATA_TO_INSERT"
             })
@@ -253,7 +253,7 @@ const postBatchInvoice = async(req,res,next) => {
 
         if (studentList.length < 1) {
             return res.status(httpStatus.CREATED).json({
-                success:true,
+                success: true,
                 message: "No data to insert",
                 code: "NO_DATA_TO_INSERT"
             })
@@ -266,7 +266,7 @@ const postBatchInvoice = async(req,res,next) => {
             let generatedRandomString = randomString(10).toUpperCase()
             let code = stringReplaceArray(
                 getConfig.administrasi_invoice,
-                ['[YEAR]','[STUDENT]','[CODE]'],
+                ['[YEAR]', '[STUDENT]', '[CODE]'],
                 [getYear, item.id, generatedRandomString]
             )
             return {
@@ -279,8 +279,8 @@ const postBatchInvoice = async(req,res,next) => {
         const inserting = await db(INVOICE_DB).insert(data2insert)
 
         return res.json({
-            success:true,
-            result:inserting
+            success: true,
+            result: inserting
         })
     } catch (error) {
         next(error)

@@ -6,16 +6,16 @@ const db = require('../../../../lib/db')
 const _ = require('lodash')
 
 const studentHeaderArray = [
-    'No','NIS','Email','Kata sandi','Nama depan','Nama belakang','Kelas','Prodi','Jenis','Status'
+    'No', 'NIS', 'Email', 'Kata sandi', 'Nama depan', 'Nama belakang', 'Kelas', 'Prodi', 'Jenis', 'Status'
 ]
 
-const studentUpload = async(req,res,next) => {
+const studentUpload = async (req, res, next) => {
     try {
         // read excel from buffer then convert it to JSON
         const convert = await excelToJson(req.file.buffer)
         if (!convert.isValidTemplate(studentHeaderArray)) {
             throw new sendError({
-                status:httpStatus.BAD_REQUEST,
+                status: httpStatus.BAD_REQUEST,
                 code: 'ERR_WRONG_TEMPLATE',
                 message: 'Wrong student template'
             })
@@ -49,9 +49,9 @@ const studentUpload = async(req,res,next) => {
         }
 
         const _getDataFromDb = (select, key) => db(STUDENT_DB).select(select).whereIn(select, _getArrayByIndex(key))
-        const getNISFromDb = await _getDataFromDb('NIS','NIS')
+        const getNISFromDb = await _getDataFromDb('NIS', 'NIS')
         const mapNISFromDb = getNISFromDb.map(item => item.NIS)
-        const getEmailFromDb = await _getDataFromDb('email','Email')
+        const getEmailFromDb = await _getDataFromDb('email', 'Email')
         const getEmailFromStaffDb = await db(USER_DB).select('email').whereIn('email', _getArrayByIndex('Email'))
 
         // email validation
@@ -70,15 +70,16 @@ const studentUpload = async(req,res,next) => {
 
         // class validation 
         // get all class code from database
-        const getAllClassCodeFromDb = await db(CLASS_DB).select('kode','id','angkatan')
+        const getAllClassCodeFromDb = await db(CLASS_DB).select('kode', 'id', 'angkatan')
         const mapClassFromDb = getAllClassCodeFromDb.map(element => element.kode)
         const getClassFromTemplate = _.uniqBy(data.map(item => item.Kelas))
         // filter class when class can't be found in array class database
-        const findClassNotFound = getClassFromTemplate.filter(item => !mapClassFromDb.includes(item))
+        const findClassNotFound = getClassFromTemplate.filter(item => !mapClassFromDb.includes(typeof item == 'number' ? item.toString() : item))
+        console.log(findClassNotFound)
         // if class not found is more than zero(zero mean all class found)
         if (findClassNotFound.length > 0) {
             throw new sendError({
-                status:httpStatus.BAD_REQUEST,
+                status: httpStatus.BAD_REQUEST,
                 code: 'ERR_CLASS_NOT_FOUND',
                 message: 'Some class(es) couldn\'t be found in database',
                 data: findClassNotFound
@@ -86,13 +87,13 @@ const studentUpload = async(req,res,next) => {
         }
 
         // prodi validation
-        const getAllProdiCodeFromDb = await db(PRODI_DB).select('kode','id')
+        const getAllProdiCodeFromDb = await db(PRODI_DB).select('kode', 'id')
         const mapProdiFromDb = getAllProdiCodeFromDb.map(item => item.kode)
         const getProdiFromTemplate = _.uniqBy(data.map(item => item.Prodi))
         const findProdiNotFound = getProdiFromTemplate.filter(item => !mapProdiFromDb.includes(item))
         if (findProdiNotFound.length > 0) {
             throw new sendError({
-                status:httpStatus.BAD_REQUEST,
+                status: httpStatus.BAD_REQUEST,
                 code: 'ERR_PRODI_NOT_FOUND',
                 message: 'Some prodi(s) couldn\'t be found in database',
                 data: findProdiNotFound
@@ -101,7 +102,7 @@ const studentUpload = async(req,res,next) => {
 
         // jenis validation
         const findInvalidJenisValue = data.filter(item => {
-            if(item.Jenis == 'B' || item.Jenis == 'R') return false
+            if (item.Jenis == 'B' || item.Jenis == 'R') return false
             return true
         }).map(item => `No. ${item.No}`)
         if (findInvalidJenisValue.length > 0) {
@@ -170,13 +171,13 @@ const studentUpload = async(req,res,next) => {
         })
         const listToInsert = dataList.filter(item => !mapNISFromDb.includes(item.NIS))
         const inserting = await db(STUDENT_DB).insert(listToInsert)
-        const updating = listToUpdate.map(async(item) => {
-            await db(STUDENT_DB).update(item).where('NIS',item.NIS)
+        const updating = listToUpdate.map(async (item) => {
+            await db(STUDENT_DB).update(item).where('NIS', item.NIS)
             return item
         })
 
         return res.json({
-            success:true,
+            success: true,
             data: {
                 inserting,
                 updating

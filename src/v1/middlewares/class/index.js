@@ -6,17 +6,17 @@ const { dataMapping, sendError } = require('../../utils')
 
 const CLASS_DB = 'administrasi_kelas_angkatan'
 
-const getClass = async(req,res,next) => {
+const getClass = async (req, res, next) => {
     const { search, isActive } = req.query
     try {
         const getData = await db(CLASS_DB)
             .orderBy([
-                {column: 'angkatan', order:'desc'},
-                {column: 'semester', order:'desc'},
+                { column: 'angkatan', order: 'desc' },
+                { column: 'semester', order: 'desc' },
             ])
             .where('nama', 'like', `%${search || ''}%`)
-            .where('status', 'like',`${isActive ? 'aktif' : '%%'}`)
-            .paginate(pagination(req.page,req.limit))
+            .where('status', 'like', `${isActive ? 'aktif' : '%%'}`)
+            .paginate(pagination(req.page, req.limit))
 
         getData.data = getData.data.map(dataMapping.kelas)
 
@@ -26,7 +26,7 @@ const getClass = async(req,res,next) => {
     }
 }
 
-const getClassById = async(req,res,next) => {
+const getClassById = async (req, res, next) => {
     try {
         const getData = await db(CLASS_DB).where('id', req.params.id).first()
 
@@ -40,11 +40,11 @@ const getClassById = async(req,res,next) => {
 
         return res.json(dataMapping.kelas(getData))
     } catch (error) {
-        
+
     }
 }
 
-const postClass = async(req,res,next) => {
+const postClass = async (req, res, next) => {
     const { body } = req
 
     try {
@@ -55,7 +55,7 @@ const postClass = async(req,res,next) => {
 
         if (checkClassFromDb) {
             throw new sendError({
-                status:httpStatus.BAD_REQUEST,
+                status: httpStatus.BAD_REQUEST,
                 message: 'Data with semester and angkatan given already exist',
                 code: 'ERR_DATA_EXIST'
             })
@@ -63,13 +63,14 @@ const postClass = async(req,res,next) => {
 
         const inserting = await db(CLASS_DB).insert({
             nama: body.name,
+            kode: body.semester + '' + body.angkatan,
             semester: body.semester,
             angkatan: body.angkatan,
             status: body.isActive ? 'aktif' : 'nonaktif'
         })
 
         return res.json({
-            success:true,
+            success: true,
             result: inserting
         })
     } catch (error) {
@@ -77,7 +78,7 @@ const postClass = async(req,res,next) => {
     }
 }
 
-const updateClassById = async(req,res,next) => {
+const updateClassById = async (req, res, next) => {
     const { body } = req
     const { id } = req.params
     try {
@@ -88,13 +89,13 @@ const updateClassById = async(req,res,next) => {
 
         if (checkExistingData) {
             throw new sendError({
-                status:httpStatus.BAD_REQUEST,
+                status: httpStatus.BAD_REQUEST,
                 message: 'Data with semester and angkatan from other data is exist',
                 code: 'ERR_DATA_EXIST'
             })
         }
 
-        const updating = await db(CLASS_DB).where('id',id).update({
+        const updating = await db(CLASS_DB).where('id', id).update({
             nama: body.name,
             semester: body.semester,
             angkatan: body.angkatan,
@@ -102,7 +103,7 @@ const updateClassById = async(req,res,next) => {
         })
 
         return res.json({
-            success:true,
+            success: true,
             result: updating
         })
     } catch (error) {
@@ -110,21 +111,21 @@ const updateClassById = async(req,res,next) => {
     }
 }
 
-const deleteClassByIds = async(req,res,next) => {
+const deleteClassByIds = async (req, res, next) => {
     try {
         if (!Array.isArray(req.body.ids)) {
             throw new sendError({
-                status:httpStatus.BAD_REQUEST,
+                status: httpStatus.BAD_REQUEST,
                 message: 'Data invalid',
-                code:'ERR_INVALID_DATA'
+                code: 'ERR_INVALID_DATA'
             })
         }
 
-        const deleting = await db(CLASS_DB).whereIn('id',req.body.ids).del()
+        const deleting = await db(CLASS_DB).whereIn('id', req.body.ids).del()
 
         res.json({
-            success:true,
-            result:deleting
+            success: true,
+            result: deleting
         })
     } catch (error) {
         next(error)

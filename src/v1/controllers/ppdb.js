@@ -6,10 +6,7 @@ const httpStatus = require("http-status");
 const jwt = require("jsonwebtoken");
 const { withAuthToken } = require("../utils/useJWT");
 const pagination = require("../../../lib/pagination");
-const getRecaptcha = require("../../../lib/recaptcha");
 const axios = require("axios");
-
-const recaptcha = getRecaptcha()
 
 router.route("/login").post(async (req, res, next) => {
   try {
@@ -99,13 +96,6 @@ router
 
 router
   .route('/register')
-  .get(recaptcha.middleware.render, async (req, res, next) => {
-    try {
-      return res.json(res.recaptcha)
-    } catch (error) {
-      next(error)
-    }
-  })
   .post(async (req, res, next) => {
     try {
       const fetch = await axios.post(

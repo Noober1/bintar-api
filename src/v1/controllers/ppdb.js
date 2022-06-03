@@ -1,12 +1,136 @@
+const { body } = require('express-validator');
 const express = require("express");
 const router = express.Router();
-const { sendError, checkPageAndLimit } = require("../utils");
+const { sendError, checkPageAndLimit, validatorRules, validationHandler } = require("../utils");
+const utils = require('../../../lib/utils')
 const db = require("../../../lib/db");
 const httpStatus = require("http-status");
 const jwt = require("jsonwebtoken");
 const { withAuthToken } = require("../utils/useJWT");
 const pagination = require("../../../lib/pagination");
 const axios = require("axios");
+const _ = require("lodash")
+
+const generatePSBRegNumber = async (length = 3) => {
+  try {
+    const { PPDB_Tahun, PPDB_regex } = await db("dbid").first()
+    let regex = PPDB_regex
+    // create random number with length with lodash
+    const randomNumber = _.padStart(Math.floor(Math.random() * Math.floor(Math.pow(10, length))), length, '0')
+    if (!PPDB_regex.indexOf("_I_") && !PPDB_regex.indexOf("_N_")) {
+      regex = 'PSB-_Y_-_I_-_N_';
+    }
+
+    const registerNumber = regex.stringReplace(['_Y_', '_I_', '_N_'], [PPDB_Tahun, 'ONL', randomNumber])
+    const checkingNumberFromDatabase = await db("PPDBsiswa").where("no_pendaftaran", registerNumber).first()
+    if (checkingNumberFromDatabase) {
+      generatePSBRegNumber(length)
+    } else {
+      return registerNumber
+    }
+  } catch (error) {
+    console.log(error)
+    return false
+  }
+}
+
+const registerController = async (req, res, next) => {
+  try {
+    const fetch = await axios.post(
+      `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.RECAPTCHA_SECRET_KEY}&response=${req.body.captchaToken}`,
+      {},
+      {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded; charset=utf-8"
+        },
+      },
+    );
+    if (!fetch.data.success) {
+      throw new sendError({
+        status: httpStatus.FORBIDDEN,
+        message: "Captcha invalid",
+        code: "ERR_CAPTCHA_INVALID",
+      })
+    }
+
+    // TODO: register execution script need to be here
+    const validatingDate = new Date(req.body.birthDate)
+    if (!validatingDate.getTime()) {
+      throw new sendError({
+        status: httpStatus.BAD_REQUEST,
+        message: "Invalid date",
+        code: "ERR_INVALID_DATE",
+      })
+    }
+
+    const searchEmailFromPPDB = await db("PPDBsiswa").where("email", req.body.email).first()
+    const searchEmailFromStudent = await db("dbsiswa").where("email", req.body.email).first()
+    const searchEmailFromUser = await db("dbusers").where("email", req.body.email).first()
+
+    if (searchEmailFromPPDB || searchEmailFromStudent || searchEmailFromUser) {
+      throw new sendError({
+        status: httpStatus.BAD_REQUEST,
+        message: "Email yang anda masukan sudah terdaftar",
+        code: "ERR_EMAIL_EXIST",
+      })
+    }
+
+    const getSchool = await db("dbsekolah").where('kode', req.body.lastSchool).first()
+    if (!getSchool) {
+      throw new sendError({
+        status: httpStatus.BAD_REQUEST,
+        message: "School ID was not found",
+        code: "ERR_INVALID_SCHOOL_ID",
+      })
+    }
+
+    const getJurusan = await db("dbjurusan").where('nama_jurusan', req.body.selectedMajor).first()
+    if (!getJurusan) {
+      throw new sendError({
+        status: httpStatus.BAD_REQUEST,
+        message: "Major not found",
+        code: "ERR_INVALID_MAJOR",
+      })
+    }
+
+    const generatingPSBNumber = await generatePSBRegNumber()
+
+    const insertingData = {
+      no_pendaftaran: generatingPSBNumber,
+      PPDB_tahun: new Date().getFullYear(),
+      tanggal: new Date(),
+      nama_depan: req.body.firstName,
+      nama_belakang: req.body.lastName,
+      email: req.body.email,
+      no_telpon: req.body.phone,
+      tempat_lahir: req.body.birthPlace,
+      tanggal_lahir: validatingDate,
+      pendidikan_terakhir: req.body.lastEducation,
+      sekolah_lulus: req.body.graduateYear,
+      asal_sekolah: req.body.lastSchool,
+      nisn: req.body.nisn,
+      jurusan_pilih: req.body.selectedMajor,
+      jenis_kelamin: req.body.sex
+    }
+
+    const inserting = await db("PPDBsiswa").insert(insertingData)
+
+    if (!inserting) {
+      throw new sendError({
+        status: httpStatus.INTERNAL_SERVER_ERROR,
+        message: "Failed to register",
+        code: "ERR_FAILED_TO_REGISTER",
+      })
+    }
+
+    return res.json({
+      success: true
+    })
+
+  } catch (error) {
+    next(error)
+  }
+}
 
 router.route("/login").post(async (req, res, next) => {
   try {
@@ -96,30 +220,9 @@ router
 
 router
   .route('/register')
-  .post(async (req, res, next) => {
-    try {
-      const fetch = await axios.post(
-        `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.RECAPTCHA_SECRET_KEY}&response=${req.body.captchaToken}`,
-        {},
-        {
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded; charset=utf-8"
-          },
-        },
-      );
-      if (!fetch.data.success) {
-        throw new sendError({
-          status: httpStatus.FORBIDDEN,
-          message: "Captcha invalid",
-          code: "ERR_CAPTCHA_INVALID",
-        })
-      }
-
-      // TODO: register execution script need to be here
-      res.json({ success: true })
-    } catch (error) {
-      next(error)
-    }
-  })
-
+  .post(
+    validatorRules.PPDBRegister(),
+    validationHandler,
+    registerController
+  )
 module.exports = router;

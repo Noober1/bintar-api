@@ -11,6 +11,11 @@ const pagination = require("../../../lib/pagination");
 const axios = require("axios");
 const _ = require("lodash")
 
+const _getBasicData = () => {
+  let selects = this.arguments ? this.arguments : '*';
+  return db('dbsekolah').select(selects).first();
+}
+
 const generatePSBRegNumber = async (length = 3) => {
   try {
     const { PPDB_Tahun, PPDB_regex } = await db("dbid").first()
@@ -53,7 +58,6 @@ const registerController = async (req, res, next) => {
       })
     }
 
-    // TODO: register execution script need to be here
     const validatingDate = new Date(req.body.birthDate)
     if (!validatingDate.getTime()) {
       throw new sendError({
@@ -93,7 +97,7 @@ const registerController = async (req, res, next) => {
       })
     }
 
-    const generatingPSBNumber = await generatePSBRegNumber()
+    const generatingPSBNumber = await generatePSBRegNumber(4)
 
     const insertingData = {
       no_pendaftaran: generatingPSBNumber,
@@ -177,9 +181,8 @@ router.route("/login").post(async (req, res, next) => {
 // profile route
 router.route("/profile").get(withAuthToken, async (req, res, next) => {
   try {
-    console.log(req.auth);
     const getData = await db("PPDBsiswa")
-      .select("nama_depan", "nama_belakang", "email")
+      .select("nama_depan", "nama_belakang", "email", "bio_edited")
       .where("id", req.auth.id)
       .first();
 
@@ -187,6 +190,7 @@ router.route("/profile").get(withAuthToken, async (req, res, next) => {
       firstName: getData.nama_depan,
       lastName: getData.nama_belakang,
       fullName: getData.nama_depan + " " + getData.nama_belakang,
+      profileComplete: getData.bio_edited == "Y"
     });
   } catch (error) {
     next(error);

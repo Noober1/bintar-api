@@ -184,5 +184,87 @@ module.exports = {
             verification: item.tanggal_verifikasi
         },
         picture: item.picture
+    }),
+    // PPDB bio
+    ppdbBio: item => ({
+        id: item.id,
+        PPDBYear: item.PPDB_tahun,
+        registerNumber: item.no_pendaftaran,
+        registerDate: item.tanggal,
+        email: item.email,
+        phone: item.no_telpon,
+        name: {
+            firstName: item.nama_depan,
+            lastName: item.nama_belakang,
+            fullName: item.nama_depan + ' ' + item.nama_belakang,
+            nickname: item.nama_panggilan,
+            initial: item.nama_depan.charAt(0) + item.nama_belakang.charAt(0)
+        },
+        selectedMajor: item.jurusan_pilih,
+        disease: {
+            relapsingDisease: item.penyakit_kambuhan,
+            seriousDisease: item.penyakit_berat,
+        },
+        numbers: {
+            NISN: item.nisn,
+            KIPKPS: item.kps_kip,
+            examNumber: item.no_ujian,
+            certificateNumber: item.no_ijazah,
+            SKHUNNumber: item.no_skhun
+        },
+        parentPhone: item.no_telpon_ortu,
+        birth: {
+            place: item.tempat_lahir,
+            date: item.tanggal_lahir,
+        },
+        religion: item.agama,
+        nationality: item.kewarganegaraan,
+        family: {
+            childPosition: item.anak_ke,
+            siblingCount: item.saudara_kandung,
+            stepSiblingCount: item.saudara_tiri,
+            adoptedSiblingCount: item.saudara_angkat,
+            familyStatus: item.status_keluarga,
+        },
+        motherLanguage: item.bahasa_rumah,
+        livingWith: item.tinggal_bersama,
+        homeToSchoolDistance: item.jarak_sekolah,
+        address: {
+            street: item.alamat_kampung,
+            village: item.alamat_desa,
+            district: item.alamat_kecamatan,
+            city: item.alamat_kabupaten,
+            province: item.alamat_provinsi,
+            postalCode: item.kode_pos
+        },
+        body: {
+            sex: item.jenis_kelamin,
+            weight: item.berat_badan,
+            height: item.tinggi_badan,
+            bloodType: item.golongan_darah,
+        },
+        lastEducation: {
+            grade: item.pendidikan_terakhir,
+            school: item.asal_sekolah,
+            graduateYear: item.sekolah_lulus,
+        },
+        father: {
+            fullName: item.ayah_nama,
+            birthDate: item.ayah_ttl,
+            nationality: item.ayah_kewarganegaraan,
+            education: item.ayah_pendidikan,
+            occupation: item.ayah_pekerjaan,
+            income: item.ayah_penghasilan,
+            address: item.ayah_alamat
+        },
+        mother: {
+            fullName: item.ibu_nama,
+            birthDate: item.ibu_ttl,
+            nationality: item.ibu_kewarganegaraan,
+            education: item.ibu_pendidikan,
+            occupation: item.ibu_pekerjaan,
+            income: item.ibu_penghasilan,
+            address: item.ibu_alamat
+        }
     })
 }

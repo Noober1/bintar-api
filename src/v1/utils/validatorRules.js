@@ -322,7 +322,7 @@ module.exports = {
         body('lastEducation')
             .not().isEmpty().withMessage(msg.isNotEmpty)
             .isIn(['SMP', 'MTS']).withMessage(msg.isIn(['SMP', 'MTS'])),
-        body('lastSchool')
+        body('lastEducationSchool')
             .not().isEmpty().withMessage(msg.isNotEmpty)
             .isString().withMessage(msg.isString)
             .isLength({ max: 10 }).withMessage(msg.isLength(1, 10)),

@@ -187,7 +187,6 @@ module.exports = {
     }),
     // PPDB bio
     ppdbBio: item => ({
-        id: item.id,
         PPDBYear: item.PPDB_tahun,
         registerNumber: item.no_pendaftaran,
         registerDate: item.tanggal,
@@ -231,10 +230,22 @@ module.exports = {
         homeToSchoolDistance: item.jarak_sekolah,
         address: {
             street: item.alamat_kampung,
-            village: item.alamat_desa,
-            district: item.alamat_kecamatan,
-            city: item.alamat_kabupaten,
-            province: item.alamat_provinsi,
+            village: {
+                code: item.alamat_desa_id,
+                name: item.alamat_desa_nama
+            },
+            district: {
+                code: item.alamat_kecamatan_id,
+                name: item.alamat_kecamatan_nama
+            },
+            city: {
+                code: item.alamat_kabupaten_id,
+                name: item.alamat_kabupaten_nama
+            },
+            province: {
+                code: item.alamat_provinsi_id,
+                name: item.alamat_provinsi_nama
+            },
             postalCode: item.kode_pos
         },
         body: {
@@ -245,7 +256,10 @@ module.exports = {
         },
         lastEducation: {
             grade: item.pendidikan_terakhir,
-            school: item.asal_sekolah,
+            school: {
+                code: item.asal_sekolah_kode,
+                name: item.asal_sekolah_nama
+            },
             graduateYear: item.sekolah_lulus,
         },
         father: {
@@ -265,6 +279,14 @@ module.exports = {
             occupation: item.ibu_pekerjaan,
             income: item.ibu_penghasilan,
             address: item.ibu_alamat
+        },
+        bioEditProgress: {
+            basic: item.basic_edited == "Y",
+            number: item.number_edited == "Y",
+            advanced: item.advanced_edited == "Y",
+            additional: item.additional_edited == "Y",
+            address: item.address_edited == "Y",
+            parent: item.parent_edited == "Y"
         }
     })
 }

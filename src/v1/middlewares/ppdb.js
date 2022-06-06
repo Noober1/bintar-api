@@ -181,7 +181,7 @@ ppdb.postLogin = async (req, res, next) => {
 ppdb.getProfile = async (req, res, next) => {
     try {
         const getData = await db("PPDBsiswa")
-            .select("nama_depan", "nama_belakang", "email", "bio_edited")
+            .select("nama_depan", "nama_belakang", "email", "basic_edited", "number_edited", "advanced_edited", "address_edited", "additional_edited", "parent_edited")
             .where("id", req.auth.id)
             .first();
 
@@ -189,7 +189,14 @@ ppdb.getProfile = async (req, res, next) => {
             firstName: getData.nama_depan,
             lastName: getData.nama_belakang,
             fullName: getData.nama_depan + " " + getData.nama_belakang,
-            profileComplete: getData.bio_edited == "Y"
+            profileComplete: {
+                basic: getData.basic_edited == "Y",
+                number: getData.number_edited == "Y",
+                advanced: getData.advanced_edited == "Y",
+                address: getData.address_edited == "Y",
+                additional: getData.additional_edited == "Y",
+                parent: getData.parent_edited == "Y"
+            }
         });
     } catch (error) {
         next(error);
@@ -201,33 +208,117 @@ ppdb.getBio = async (req, res, next) => {
     try {
         const getData = await db("PPDBsiswa")
             .select([
-                'id', 'PPDB_tahun', 'tanggal',
-                'no_pendaftaran', 'nama_depan',
-                'nama_belakang', 'asal_sekolah',
-                'jurusan_pilih', 'penyakit_kambuhan',
-                'penyakit_berat', 'nisn',
-                'kps_kip', 'no_ujian', 'no_ijazah',
-                'no_skhun', 'no_telpon', 'no_telpon_ortu',
-                'nama_panggilan', 'jenis_kelamin', 'tempat_lahir',
-                'tanggal_lahir', 'agama', 'kewarganegaraan',
-                'anak_ke', 'anak_dari', 'saudara_kandung',
-                'saudara_tiri', 'saudara_angkat',
-                'status_keluarga', 'bahasa_rumah',
-                'alamat_kampung', 'alamat_desa',
-                'alamat_kecamatan', 'alamat_kabupaten',
-                'alamat_provinsi', 'kode_pos', 'email',
-                'tinggal_bersama', 'jarak_sekolah',
-                'berat_badan', 'tinggi_badan', 'golongan_darah',
-                'pendidikan_terakhir', 'sekolah_lulus', 'ayah_nama',
-                'ayah_ttl', 'ayah_kewarganegaraan', 'ayah_pendidikan',
-                'ayah_pekerjaan', 'ayah_penghasilan', 'ayah_alamat',
-                'ibu_nama', 'ibu_ttl', 'ibu_kewarganegaraan',
-                'ibu_pendidikan', 'ibu_pekerjaan', 'ibu_penghasilan',
-                'ibu_alamat', 'peroleh_info'
+                'PPDBsiswa.id',
+                'PPDBsiswa.PPDB_tahun',
+                'PPDBsiswa.tanggal',
+                'PPDBsiswa.no_pendaftaran',
+                'PPDBsiswa.nama_depan',
+                'PPDBsiswa.nama_belakang',
+                'dbsekolah.kode as asal_sekolah_kode',
+                'dbsekolah.nama_sekolah as asal_sekolah_nama',
+                'PPDBsiswa.jurusan_pilih',
+                'PPDBsiswa.penyakit_kambuhan',
+                'PPDBsiswa.penyakit_berat',
+                'PPDBsiswa.nisn',
+                'PPDBsiswa.kps_kip',
+                'PPDBsiswa.no_ujian',
+                'PPDBsiswa.no_ijazah',
+                'PPDBsiswa.no_skhun',
+                'PPDBsiswa.no_telpon',
+                'PPDBsiswa.no_telpon_ortu',
+                'PPDBsiswa.nama_panggilan',
+                'PPDBsiswa.jenis_kelamin',
+                'PPDBsiswa.tempat_lahir',
+                'PPDBsiswa.tanggal_lahir',
+                'PPDBsiswa.agama',
+                'PPDBsiswa.kewarganegaraan',
+                'PPDBsiswa.anak_ke',
+                'PPDBsiswa.anak_dari',
+                'PPDBsiswa.saudara_kandung',
+                'PPDBsiswa.saudara_tiri',
+                'PPDBsiswa.saudara_angkat',
+                'PPDBsiswa.status_keluarga',
+                'PPDBsiswa.bahasa_rumah',
+                'PPDBsiswa.alamat_kampung',
+                'villages.id as alamat_desa_id',
+                'villages.name as alamat_desa_nama',
+                'districts.id as alamat_kecamatan_id',
+                'districts.name as alamat_kecamatan_nama',
+                'regencies.id as alamat_kabupaten_id',
+                'regencies.name as alamat_kabupaten_nama',
+                'provinces.id as alamat_provinsi_id',
+                'provinces.name as alamat_provinsi_nama',
+                'PPDBsiswa.kode_pos',
+                'PPDBsiswa.email',
+                'PPDBsiswa.tinggal_bersama',
+                'PPDBsiswa.jarak_sekolah',
+                'PPDBsiswa.berat_badan',
+                'PPDBsiswa.tinggi_badan',
+                'PPDBsiswa.golongan_darah',
+                'PPDBsiswa.pendidikan_terakhir',
+                'PPDBsiswa.sekolah_lulus',
+                'PPDBsiswa.ayah_nama',
+                'PPDBsiswa.ayah_ttl',
+                'PPDBsiswa.ayah_kewarganegaraan',
+                'PPDBsiswa.ayah_pendidikan',
+                'PPDBsiswa.ayah_pekerjaan',
+                'PPDBsiswa.ayah_penghasilan',
+                'PPDBsiswa.ayah_alamat',
+                'PPDBsiswa.ibu_nama',
+                'PPDBsiswa.ibu_ttl',
+                'PPDBsiswa.ibu_kewarganegaraan',
+                'PPDBsiswa.ibu_pendidikan',
+                'PPDBsiswa.ibu_pekerjaan',
+                'PPDBsiswa.ibu_penghasilan',
+                'PPDBsiswa.ibu_alamat',
+                'PPDBsiswa.peroleh_info',
+                'PPDBsiswa.basic_edited',
+                'PPDBsiswa.number_edited',
+                'PPDBsiswa.advanced_edited',
+                'PPDBsiswa.additional_edited',
+                'PPDBsiswa.address_edited',
+                'PPDBsiswa.parent_edited',
             ])
-            .where('id', req.auth.id).first()
+            .leftJoin('dbsekolah', 'dbsekolah.kode', '=', 'PPDBsiswa.asal_sekolah')
+            .leftJoin('villages', 'villages.id', '=', 'PPDBsiswa.alamat_desa')
+            .leftJoin('districts', 'districts.id', '=', 'PPDBsiswa.alamat_kecamatan')
+            .leftJoin('regencies', 'regencies.id', '=', 'PPDBsiswa.alamat_kabupaten')
+            .leftJoin('provinces', 'provinces.id', '=', 'PPDBsiswa.alamat_provinsi')
+            .where('PPDBsiswa.id', req.auth.id).first()
 
         return res.json(dataMapping.ppdbBio(getData));
+    } catch (error) {
+        next(error)
+    }
+}
+
+ppdb.putBioBasic = async (req, res, next) => {
+    const { body } = req
+    try {
+        const updating = await db("PPDBsiswa")
+            .where("id", req.auth.id)
+            .update({
+                nama_depan: body.firstName,
+                nama_belakang: body.lastName,
+                tempat_lahir: body.birthPlace,
+                tanggal_lahir: new Date(body.birthDate),
+                sekolah_lulus: body.graduateYear,
+                pendidikan_terakhir: body.lastEducation,
+                asal_sekolah: body.lastEducationSchool,
+                jurusan_pilih: body.selectedMajor,
+                jenis_kelamin: body.sex,
+                basic_edited: "Y"
+            })
+
+        return res.json({
+            success: true,
+            data: updating
+        })
+        // return res.json({
+        //     params: req.params,
+        //     auth: req.auth,
+        //     body: req.body
+        // })
     } catch (error) {
         next(error)
     }

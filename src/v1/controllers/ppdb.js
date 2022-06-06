@@ -10,11 +10,13 @@ router.route("/login").post(ppdb.postLogin);
 router.route("/profile").get(withAuthToken, ppdb.getProfile);
 
 // bio
-router
-  .route('/bio')
-  .get(
-    withAuthToken, ppdb.getBio
-  )
+router.get('/bio', withAuthToken, ppdb.getBio)
+router.put('/bio/basic', withAuthToken, ppdb.putBioBasic)
+// router.put('/bio/number', withAuthToken, ppdb.putBio)
+// router.put('/bio/advanced', withAuthToken, ppdb.putBio)
+// router.put('/bio/additional', withAuthToken, ppdb.putBio)
+// router.put('/bio/address', withAuthToken, ppdb.putBio)
+// router.put('/bio/parent', withAuthToken, ppdb.putBio)
 
 // get sekolah list
 router

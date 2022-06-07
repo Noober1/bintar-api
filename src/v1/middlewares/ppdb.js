@@ -314,11 +314,139 @@ ppdb.putBioBasic = async (req, res, next) => {
             success: true,
             data: updating
         })
-        // return res.json({
-        //     params: req.params,
-        //     auth: req.auth,
-        //     body: req.body
-        // })
+    } catch (error) {
+        next(error)
+    }
+}
+
+ppdb.putBioNumber = async (req, res, next) => {
+    const { body } = req
+    try {
+        const updating = await db("PPDBsiswa")
+            .where("id", req.auth.id)
+            .update({
+                no_telpon: body.phone,
+                nisn: body.nisn,
+                kps_kip: body.kipkps,
+                no_ujian: body.examNumber,
+                no_ijazah: body.certificateNumber,
+                no_skhun: body.SKHUNNumber,
+                number_edited: "Y"
+            })
+
+        return res.json({
+            success: true,
+            data: updating
+        })
+    } catch (error) {
+        next(error)
+    }
+}
+
+ppdb.putBioAdvanced = async (req, res, next) => {
+    const { body } = req
+    try {
+        const updating = await db("PPDBsiswa")
+            .where("id", req.auth.id)
+            .update({
+                saudara_angkat: body.adoptedSiblingCount,
+                anak_ke: body.childPosition,
+                anak_dari: body.childCount,
+                status_keluarga: body.familyStatus,
+                bahasa_rumah: body.motherLanguage,
+                kewarganegaraan: body.nationality,
+                nama_panggilan: body.nickname,
+                agama: body.religion,
+                saudara_kandung: body.siblingCount,
+                saudara_tiri: body.stepSiblingCount,
+                advanced_edited: "Y"
+            })
+
+        return res.json({
+            success: true,
+            data: updating
+        })
+    } catch (error) {
+        next(error)
+    }
+}
+
+ppdb.putBioAddress = async (req, res, next) => {
+    const { body } = req
+    try {
+        const updating = await db("PPDBsiswa")
+            .where("id", req.auth.id)
+            .update({
+                alamat_kampung: body.street,
+                alamat_desa: body.village,
+                alamat_kecamatan: body.district,
+                alamat_kabupaten: body.city,
+                alamat_provinsi: body.province,
+                kode_pos: body.postalCode,
+                address_edited: "Y"
+            })
+
+        return res.json({
+            success: true,
+            data: updating
+        })
+    } catch (error) {
+        next(error)
+    }
+}
+
+ppdb.putBioAdditional = async (req, res, next) => {
+    const { body } = req
+    try {
+        const updating = await db("PPDBsiswa")
+            .where("id", req.auth.id)
+            .update({
+                golongan_darah: body.bloodType,
+                tinggi_badan: body.height,
+                berat_badan: body.weight,
+                jarak_sekolah: body.homeToSchoolDistance,
+                tinggal_bersama: body.livingWith,
+                penyakit_kambuhan: body.relapsingDisease,
+                penyakit_berat: body.seriousDisease,
+                additional_edited: "Y"
+            })
+
+        return res.json({
+            success: true,
+            data: updating
+        })
+    } catch (error) {
+        next(error)
+    }
+}
+
+ppdb.putBioParent = async (req, res, next) => {
+    const { body } = req
+    try {
+        const updating = await db("PPDBsiswa")
+            .where("id", req.auth.id)
+            .update({
+                ayah_alamat: body.fatherAddress,
+                ayah_ttl: body.fatherBirthDate,
+                ayah_pendidikan: body.fatherEducation,
+                ayah_nama: body.fatherFullname,
+                ayah_penghasilan: body.fatherIncome,
+                ayah_kewarganegaraan: body.fatherNationality,
+                ayah_pekerjaan: body.fatherOccupation,
+                ibu_nama: body.motherAddress,
+                ibu_ttl: body.otherBirthDate,
+                ibu_pendidikan: body.motherEducation,
+                ibu_alamat: body.motherFullname,
+                ibu_penghasilan: body.motherIncome,
+                ibu_kewarganegaraan: body.motherNationality,
+                ibu_pekerjaan: body.motherOccupation,
+                parent_edited: "Y"
+            })
+
+        return res.json({
+            success: true,
+            data: updating
+        })
     } catch (error) {
         next(error)
     }

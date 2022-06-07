@@ -12,11 +12,11 @@ router.route("/profile").get(withAuthToken, ppdb.getProfile);
 // bio
 router.get('/bio', withAuthToken, ppdb.getBio)
 router.put('/bio/basic', withAuthToken, ppdb.putBioBasic)
-// router.put('/bio/number', withAuthToken, ppdb.putBio)
-// router.put('/bio/advanced', withAuthToken, ppdb.putBio)
-// router.put('/bio/additional', withAuthToken, ppdb.putBio)
-// router.put('/bio/address', withAuthToken, ppdb.putBio)
-// router.put('/bio/parent', withAuthToken, ppdb.putBio)
+router.put('/bio/number', withAuthToken, ppdb.putBioNumber)
+router.put('/bio/advanced', withAuthToken, ppdb.putBioAdvanced)
+router.put('/bio/address', withAuthToken, ppdb.putBioAddress)
+router.put('/bio/additional', withAuthToken, ppdb.putBioAdditional)
+router.put('/bio/parent', withAuthToken, ppdb.putBioParent)
 
 // get sekolah list
 router

@@ -434,7 +434,7 @@ ppdb.putBioParent = async (req, res, next) => {
                 ayah_kewarganegaraan: body.fatherNationality,
                 ayah_pekerjaan: body.fatherOccupation,
                 ibu_nama: body.motherAddress,
-                ibu_ttl: body.otherBirthDate,
+                ibu_ttl: body.motherBirthDate,
                 ibu_pendidikan: body.motherEducation,
                 ibu_alamat: body.motherFullname,
                 ibu_penghasilan: body.motherIncome,
